@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowUpRight,
   Award,
@@ -7,7 +7,6 @@ import {
   Cpu,
   Gauge,
   Github,
-  GraduationCap,
   Linkedin,
   Mail,
   MapPin,
@@ -19,11 +18,15 @@ import {
   Zap
 } from 'lucide-react';
 
+type ViewMode = 'skim' | 'deep';
+
 const Resume = () => {
   const [activeSection, setActiveSection] = useState('impact');
-  const [viewMode, setViewMode] = useState<'skim' | 'deep'>('skim');
+  const [viewMode, setViewMode] = useState<ViewMode>('skim');
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showTop, setShowTop] = useState(false);
+  const [lockFocus, setLockFocus] = useState(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
   const profile = {
     firstName: 'Sourabh',
@@ -45,15 +48,6 @@ const Resume = () => {
   };
 
   const githubPagesUrl = `https://${links.githubUsername}.github.io/${links.repoName}`;
-
-  const navItems = [
-    { id: 'impact', label: 'Capability' },
-    { id: 'work', label: 'Experience' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'skills', label: 'Toolbox' },
-    { id: 'recognition', label: 'Recognition' },
-    { id: 'contact', label: 'Contact' }
-  ];
 
   const stats = [
     { value: '70%', label: 'Boot latency reduction', meter: 70 },
@@ -258,31 +252,112 @@ const Resume = () => {
     cgpa: '8.1'
   };
 
-  const rootStyle = {
-    '--bg': '#edf2f7',
-    '--ink': '#0b1a24',
-    '--muted': '#4d5b66',
-    '--accent': '#ff6a3d',
-    '--accent-soft': 'rgba(255, 106, 61, 0.18)',
-    '--accent-2': '#0ea5a4',
-    '--accent-2-soft': 'rgba(14, 165, 164, 0.16)',
-    '--accent-3': '#1c4e80',
-    '--accent-3-soft': 'rgba(28, 78, 128, 0.12)',
-    '--surface': 'rgba(255, 255, 255, 0.72)',
-    '--surface-strong': 'rgba(255, 255, 255, 0.9)',
-    '--stroke': 'rgba(11, 26, 36, 0.12)',
-    '--shadow': '0 30px 80px rgba(11, 26, 36, 0.16)',
-    '--font-display': "'Sora', sans-serif",
-    '--font-body': "'Plus Jakarta Sans', sans-serif",
-    '--font-mono': "'JetBrains Mono', monospace"
-  } as React.CSSProperties;
+  const chapterItems = useMemo(
+    () => [
+      {
+        id: 'impact',
+        label: 'Capability',
+        title: 'Systems you can trust at scale',
+        summary: 'Latency-first systems engineering with secure automation and GPU-level observability.',
+        chips: ['C++17/20', 'Linux', 'GPU', 'Automation'],
+        icon: Sparkles
+      },
+      {
+        id: 'work',
+        label: 'Experience',
+        title: 'High-performance platforms for global devices',
+        summary: 'Samsung R&D platform engineering across automation, memory safety, and OTA pipelines.',
+        chips: ['DAB', 'LRU', 'MQTT', 'ASAN'],
+        icon: Briefcase
+      },
+      {
+        id: 'projects',
+        label: 'Projects',
+        title: 'Hands-on builds beyond the day job',
+        summary: 'Gameplay AI systems and GenAI infrastructure built end-to-end.',
+        chips: ['Unreal', 'RAG', 'LLM', 'OpenGL'],
+        icon: Cpu
+      },
+      {
+        id: 'skills',
+        label: 'Toolbox',
+        title: 'The stack behind the systems',
+        summary: 'Languages, OS internals, graphics profiling, and distributed tooling.',
+        chips: ['C++', 'Linux', 'GPU', 'CI'],
+        icon: Code
+      },
+      {
+        id: 'recognition',
+        label: 'Recognition',
+        title: 'Awards and academic foundation',
+        summary: 'SPOT + Stellar awards with a B.Tech in Computer Engineering (CGPA 8.1).',
+        chips: ['Awards', 'CGPA 8.1'],
+        icon: Award
+      },
+      {
+        id: 'contact',
+        label: 'Contact',
+        title: 'Ready for high-stakes systems work',
+        summary: 'Let us connect for platform engineering and performance-critical roles.',
+        chips: ['Email', 'LinkedIn', 'GitHub'],
+        icon: Mail
+      }
+    ],
+    []
+  );
 
-  const stagger = (index: number): React.CSSProperties => ({
-    animationDelay: `${index * 120}ms`
-  });
+  const navItems = useMemo(
+    () => chapterItems.map((item) => ({ id: item.id, label: item.label })),
+    [chapterItems]
+  );
+
+  const currentChapter = chapterItems.find((item) => item.id === activeSection) ?? chapterItems[0];
+
+  const handleNavClick = (id: string) => {
+    setActiveSection(id);
+    if (lockFocus) {
+      return;
+    }
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleCycle = (direction: 'prev' | 'next') => {
+    const currentIndex = navItems.findIndex((item) => item.id === activeSection);
+    const delta = direction === 'next' ? 1 : -1;
+    const nextIndex = (currentIndex + delta + navItems.length) % navItems.length;
+    const nextId = navItems[nextIndex]?.id ?? navItems[0].id;
+    setActiveSection(nextId);
+    if (!lockFocus) {
+      const element = document.getElementById(nextId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
+  const scrollToTop = () => {
+    const node = scrollRef.current;
+    if (node && node.scrollHeight > node.clientHeight + 8) {
+      node.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
+      const node = scrollRef.current;
+      if (node && node.scrollHeight > node.clientHeight + 8) {
+        const total = node.scrollHeight - node.clientHeight;
+        const progress = total > 0 ? (node.scrollTop / total) * 100 : 0;
+        setScrollProgress(progress);
+        setShowTop(node.scrollTop > 240);
+        return;
+      }
+
       const total = document.documentElement.scrollHeight - window.innerHeight;
       const progress = total > 0 ? (window.scrollY / total) * 100 : 0;
       setScrollProgress(progress);
@@ -291,11 +366,28 @@ const Resume = () => {
 
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
+    const node = scrollRef.current;
+    if (node) {
+      node.addEventListener('scroll', handleScroll, { passive: true });
+    }
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (node) {
+        node.removeEventListener('scroll', handleScroll);
+      }
+    };
   }, []);
 
   useEffect(() => {
+    if (lockFocus) {
+      return;
+    }
+
+    const root =
+      scrollRef.current && scrollRef.current.scrollHeight > scrollRef.current.clientHeight + 8
+        ? scrollRef.current
+        : null;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -304,10 +396,10 @@ const Resume = () => {
           }
         });
       },
-      { rootMargin: '-30% 0px -55% 0px' }
+      { root, rootMargin: '-35% 0px -55% 0px' }
     );
 
-    navItems.forEach((item) => {
+    chapterItems.forEach((item) => {
       const element = document.getElementById(item.id);
       if (element) {
         observer.observe(element);
@@ -315,7 +407,240 @@ const Resume = () => {
     });
 
     return () => observer.disconnect();
-  }, [navItems]);
+  }, [chapterItems, lockFocus]);
+
+  const renderFocusPanel = () => {
+    if (activeSection === 'impact') {
+      return (
+        <div className="space-y-4">
+          <div className="grid gap-3">
+            {stats.map((stat) => (
+              <div key={stat.label} className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+                <div className="flex items-center justify-between">
+                  <p className="font-display text-lg font-semibold text-[color:var(--accent-3)]">
+                    {stat.value}
+                  </p>
+                  <span className="text-xs font-mono text-[color:var(--muted)]">{stat.meter}%</span>
+                </div>
+                <p className="text-xs text-[color:var(--muted)]">{stat.label}</p>
+                <div className="mt-2 h-1.5 rounded-full bg-[var(--accent-soft)]">
+                  <div
+                    className="h-full rounded-full bg-[color:var(--accent-2)]"
+                    style={{ width: `${stat.meter}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-3">
+            {principles.map((principle) => (
+              <div key={principle.title} className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+                <p className="text-sm font-semibold text-[color:var(--ink)]">{principle.title}</p>
+                <p className="text-xs text-[color:var(--muted)]">{principle.detail}</p>
+              </div>
+            ))}
+          </div>
+          {viewMode === 'deep' && (
+            <div className="grid gap-3">
+              {pillars.map((pillar) => {
+                const Icon = pillar.icon;
+                return (
+                  <div key={pillar.title} className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[color:var(--accent)]">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <p className="text-sm font-semibold text-[color:var(--ink)]">{pillar.title}</p>
+                    </div>
+                    <p className="mt-2 text-xs text-[color:var(--muted)]">{pillar.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (activeSection === 'work') {
+      const workItems = viewMode === 'skim' ? experienceHighlights.slice(0, 4) : experienceHighlights;
+      return (
+        <div className="space-y-3">
+          {workItems.map((item, index) => (
+            <div key={item.title} className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-[color:var(--ink)]">{item.title}</p>
+                <span className="text-xs font-mono text-[color:var(--muted)]">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-[color:var(--muted)]">
+                {viewMode === 'skim' ? item.summary : item.detail}
+              </p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeSection === 'projects') {
+      return (
+        <div className="space-y-3">
+          {projects.map((project) => (
+            <div key={project.title} className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+              <p className="text-sm font-semibold text-[color:var(--ink)]">{project.title}</p>
+              <p className="mt-1 text-xs text-[color:var(--accent-3)]">{project.stack}</p>
+              <p className="mt-2 text-xs text-[color:var(--muted)]">{project.summary}</p>
+              {viewMode === 'deep' && (
+                <ul className="mt-3 space-y-2 text-xs text-[color:var(--muted)]">
+                  {project.highlights.map((highlight) => (
+                    <li key={highlight} className="flex items-start gap-2">
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[var(--accent-2)]" />
+                      <span>{highlight}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeSection === 'skills') {
+      return (
+        <div className="space-y-3">
+          {skills.map((skill) => (
+            <div key={skill.label} className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+              <p className="text-sm font-semibold text-[color:var(--ink)]">{skill.label}</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {skill.items.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-[var(--stroke)] bg-white/70 px-2 py-1 text-[11px] font-mono text-[color:var(--accent-3)]"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (activeSection === 'recognition') {
+      return (
+        <div className="space-y-3">
+          <div className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+            <p className="text-sm font-semibold text-[color:var(--ink)]">Awards</p>
+            <div className="mt-2 space-y-2">
+              {awards.map((award) => (
+                <div key={award.title} className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+                  <p className="text-sm font-semibold text-[color:var(--ink)]">{award.title}</p>
+                  <p className="text-xs text-[color:var(--accent-3)]">{award.org}</p>
+                  <p className="mt-1 text-xs text-[color:var(--muted)]">{award.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+            <p className="text-sm font-semibold text-[color:var(--ink)]">Education</p>
+            <p className="mt-1 text-xs text-[color:var(--accent-3)]">{education.degree}</p>
+            <p className="text-xs text-[color:var(--muted)]">{education.school}</p>
+            <p className="text-xs text-[color:var(--muted)]">
+              {education.location} | {education.period}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {education.courses.map((course) => (
+                <span
+                  key={course}
+                  className="rounded-full border border-[var(--stroke)] bg-white/70 px-2 py-1 text-[11px] font-mono text-[color:var(--accent-3)]"
+                >
+                  {course}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (activeSection === 'contact') {
+      return (
+        <div className="space-y-3">
+          <div className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+            <p className="text-sm font-semibold text-[color:var(--ink)]">Email</p>
+            <a
+              href={`mailto:${profile.email}`}
+              className="mt-1 block text-xs text-[color:var(--accent-3)] hover:text-[color:var(--accent)]"
+            >
+              {profile.email}
+            </a>
+          </div>
+          <div className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-3">
+            <p className="text-sm font-semibold text-[color:var(--ink)]">Location</p>
+            <p className="mt-1 text-xs text-[color:var(--muted)]">{profile.location}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={links.github}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-[var(--stroke)] bg-white/80 px-3 py-2 text-xs font-semibold text-[color:var(--accent-3)] hover:text-[color:var(--accent)]"
+            >
+              GitHub
+            </a>
+            <a
+              href={links.linkedin}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-[var(--stroke)] bg-white/80 px-3 py-2 text-xs font-semibold text-[color:var(--accent-3)] hover:text-[color:var(--accent)]"
+            >
+              LinkedIn
+            </a>
+            <a
+              href={links.youtube}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-[var(--stroke)] bg-white/80 px-3 py-2 text-xs font-semibold text-[color:var(--accent-3)] hover:text-[color:var(--accent)]"
+            >
+              YouTube
+            </a>
+            <a
+              href={githubPagesUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-[var(--stroke)] bg-white/80 px-3 py-2 text-xs font-semibold text-[color:var(--accent-3)] hover:text-[color:var(--accent)]"
+            >
+              Live site
+            </a>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const rootStyle = {
+    '--bg': '#e9eff5',
+    '--ink': '#0b1a24',
+    '--muted': '#445660',
+    '--accent': '#ff6a3d',
+    '--accent-soft': 'rgba(255, 106, 61, 0.18)',
+    '--accent-2': '#0ea5a4',
+    '--accent-2-soft': 'rgba(14, 165, 164, 0.16)',
+    '--accent-3': '#1c4e80',
+    '--accent-3-soft': 'rgba(28, 78, 128, 0.12)',
+    '--surface': 'rgba(255, 255, 255, 0.72)',
+    '--surface-strong': 'rgba(255, 255, 255, 0.88)',
+    '--stroke': 'rgba(11, 26, 36, 0.12)',
+    '--shadow': '0 32px 90px rgba(11, 26, 36, 0.18)',
+    '--font-display': "'Sora', sans-serif",
+    '--font-body': "'Plus Jakarta Sans', sans-serif",
+    '--font-mono': "'JetBrains Mono', monospace"
+  } as React.CSSProperties;
 
   return (
     <div className="min-h-screen font-body text-[color:var(--ink)]" style={rootStyle}>
@@ -329,16 +654,30 @@ html { scroll-behavior: smooth; }
 .font-mono { font-family: var(--font-mono); }
 
 .glass-panel {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.5));
-  border: 1px solid var(--stroke);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.52));
+  border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: var(--shadow);
-  backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.3);
 }
 
 .glass-soft {
   background: var(--surface);
   border: 1px solid var(--stroke);
   backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(28, 78, 128, 0.35) transparent;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(28, 78, 128, 0.35);
+  border-radius: 999px;
 }
 
 @keyframes rise {
@@ -351,19 +690,12 @@ html { scroll-behavior: smooth; }
   50% { transform: translateY(-12px); }
 }
 
-@keyframes sweep {
-  from { opacity: 0; transform: translateX(-18px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
 .animate-rise { animation: rise 0.8s ease-out both; }
 .animate-float { animation: float 9s ease-in-out infinite; }
-.animate-sweep { animation: sweep 0.8s ease-out both; }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-rise,
-  .animate-float,
-  .animate-sweep {
+  .animate-float {
     animation: none;
   }
 }
@@ -380,7 +712,7 @@ html { scroll-behavior: smooth; }
             className="absolute left-[-160px] top-24 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,rgba(14,165,164,0.26),transparent_60%)] blur-3xl animate-float"
             style={{ animationDelay: '2s' }}
           />
-          <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(11,26,36,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(11,26,36,0.08)_1px,transparent_1px)] [background-size:48px_48px]" />
+          <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(11,26,36,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(11,26,36,0.08)_1px,transparent_1px)] [background-size:48px_48px]" />
           <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_center,rgba(14,165,164,0.2)_1px,transparent_1px)] [background-size:180px_180px]" />
         </div>
 
@@ -392,7 +724,7 @@ html { scroll-behavior: smooth; }
                 2026 systems portfolio
               </div>
 
-              <div className="space-y-5 animate-rise" style={stagger(1)}>
+              <div className="space-y-5 animate-rise" style={{ animationDelay: '120ms' }}>
                 <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[color:var(--accent-3)]">
                   {profile.role}
                 </p>
@@ -403,7 +735,7 @@ html { scroll-behavior: smooth; }
                 <p className="max-w-xl text-lg text-[color:var(--muted)]">{profile.tagline}</p>
               </div>
 
-              <div className="flex flex-wrap gap-3 animate-rise" style={stagger(2)}>
+              <div className="flex flex-wrap gap-3 animate-rise" style={{ animationDelay: '240ms' }}>
                 <a
                   href={`mailto:${profile.email}`}
                   className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5"
@@ -444,7 +776,7 @@ html { scroll-behavior: smooth; }
                 </a>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-2 animate-rise" style={stagger(3)}>
+              <div className="grid gap-3 md:grid-cols-2 animate-rise" style={{ animationDelay: '360ms' }}>
                 {focusAreas.map((area) => {
                   const Icon = area.icon;
                   return (
@@ -465,7 +797,7 @@ html { scroll-behavior: smooth; }
             </div>
 
             <div className="space-y-6">
-              <div className="glass-panel rounded-3xl p-6 animate-rise" style={stagger(2)}>
+              <div className="glass-panel rounded-3xl p-6 animate-rise" style={{ animationDelay: '220ms' }}>
                 <div className="flex items-center justify-between">
                   <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--accent-3)]">System index</p>
                   <span className="inline-flex items-center gap-2 rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--accent)]">
@@ -495,7 +827,41 @@ html { scroll-behavior: smooth; }
                 </div>
               </div>
 
-              <div className="glass-panel rounded-3xl p-6 animate-rise" style={stagger(3)}>
+              <div className="glass-panel rounded-3xl p-6 animate-rise" style={{ animationDelay: '320ms' }}>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--accent-3)]">Graphics signal</p>
+                  <span className="text-xs font-mono text-[color:var(--accent-3)]">GPU / IPC</span>
+                </div>
+                <div className="mt-4 rounded-2xl border border-[var(--stroke)] bg-white/70 p-4">
+                  <svg viewBox="0 0 240 120" fill="none" className="h-28 w-full">
+                    <defs>
+                      <linearGradient id="pulse" x1="0" y1="0" x2="240" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop stopColor="#ff6a3d" />
+                        <stop offset="0.5" stopColor="#0ea5a4" />
+                        <stop offset="1" stopColor="#1c4e80" />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M10 80 C 40 20, 80 120, 120 60 S 200 20, 230 70"
+                      stroke="url(#pulse)"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                    <circle cx="10" cy="80" r="4" fill="#0ea5a4" />
+                    <circle cx="120" cy="60" r="4" fill="#ff6a3d" />
+                    <circle cx="230" cy="70" r="4" fill="#1c4e80" />
+                  </svg>
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                  {['Streamline', 'PVRTune', 'EGL'].map((item) => (
+                    <div key={item} className="rounded-2xl border border-[var(--stroke)] bg-white/70 p-2">
+                      <p className="text-[color:var(--accent-3)]">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="glass-panel rounded-3xl p-6 animate-rise" style={{ animationDelay: '420ms' }}>
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <div className="absolute -inset-1 rounded-2xl bg-[var(--accent-soft)]" />
@@ -517,55 +883,39 @@ html { scroll-behavior: smooth; }
                     </div>
                   </div>
                 </div>
-
-                <div className="mt-4 space-y-3 text-sm text-[color:var(--muted)]">
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-4 w-4 text-[color:var(--accent-3)]" />
-                    <a href={`mailto:${profile.email}`} className="hover:text-[color:var(--accent-3)]">
-                      {profile.email}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
-                  <a
-                    href={links.github}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 hover:text-[color:var(--accent)]"
-                  >
-                    <Github className="h-3.5 w-3.5" />
-                    GitHub
-                  </a>
-                  <a
-                    href={links.linkedin}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 hover:text-[color:var(--accent)]"
-                  >
-                    <Linkedin className="h-3.5 w-3.5" />
-                    LinkedIn
-                  </a>
-                  <a
-                    href={links.youtube}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 hover:text-[color:var(--accent)]"
-                  >
-                    <Youtube className="h-3.5 w-3.5" />
-                    YouTube
+                <div className="mt-4 text-sm text-[color:var(--muted)]">
+                  <a href={`mailto:${profile.email}`} className="hover:text-[color:var(--accent)]">
+                    {profile.email}
                   </a>
                 </div>
               </div>
             </div>
           </header>
 
-          <div className="mt-12 grid gap-8 lg:grid-cols-[260px_1fr]">
+          <div className="mt-12 grid gap-8 lg:grid-cols-[320px_1fr]">
             <aside className="space-y-6 lg:sticky lg:top-8 lg:self-start">
               <div className="glass-panel rounded-3xl p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                  View mode
-                </p>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
+                      {currentChapter.label}
+                    </p>
+                    <h3 className="font-display text-xl font-semibold">{currentChapter.title}</h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setLockFocus((prev) => !prev)}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                      lockFocus
+                        ? 'bg-[var(--accent)] text-white'
+                        : 'bg-white/70 text-[color:var(--accent-3)]'
+                    }`}
+                  >
+                    {lockFocus ? 'Locked' : 'Auto'}
+                  </button>
+                </div>
+                <p className="mt-2 text-sm text-[color:var(--muted)]">{currentChapter.summary}</p>
+
                 <div className="mt-4 flex rounded-full border border-[var(--stroke)] bg-white/80 p-1">
                   {(['skim', 'deep'] as const).map((mode) => (
                     <button
@@ -578,13 +928,32 @@ html { scroll-behavior: smooth; }
                           : 'text-[color:var(--accent-3)] hover:text-[color:var(--accent)]'
                       }`}
                     >
-                      {mode === 'skim' ? 'Skim' : 'Deep dive'}
+                      {mode === 'skim' ? 'Skim' : 'Deep'}
                     </button>
                   ))}
                 </div>
+
+                <div className="mt-4 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleCycle('prev')}
+                    className="flex-1 rounded-full border border-[var(--stroke)] bg-white/80 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)] hover:text-[color:var(--accent)]"
+                  >
+                    Prev
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleCycle('next')}
+                    className="flex-1 rounded-full bg-[var(--accent)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white"
+                  >
+                    Next
+                  </button>
+                </div>
                 <p className="mt-3 text-xs text-[color:var(--muted)]">
-                  Switch between fast scanning and full detail without losing context.
+                  Use Prev/Next to browse without scrolling, or unlock Auto to sync with scroll.
                 </p>
+
+                <div className="mt-4 space-y-3">{renderFocusPanel()}</div>
               </div>
 
               <div className="glass-panel rounded-3xl p-5">
@@ -593,10 +962,11 @@ html { scroll-behavior: smooth; }
                 </p>
                 <div className="mt-4 space-y-2">
                   {navItems.map((item) => (
-                    <a
+                    <button
                       key={item.id}
-                      href={`#${item.id}`}
-                      className={`flex items-center justify-between rounded-2xl border border-transparent px-3 py-2 text-sm font-semibold transition ${
+                      type="button"
+                      onClick={() => handleNavClick(item.id)}
+                      className={`flex w-full items-center justify-between rounded-2xl border border-transparent px-3 py-2 text-sm font-semibold transition ${
                         activeSection === item.id
                           ? 'border-[var(--accent-soft)] bg-white/90 text-[color:var(--accent)]'
                           : 'text-[color:var(--accent-3)] hover:border-[var(--stroke)] hover:bg-white/70'
@@ -604,16 +974,15 @@ html { scroll-behavior: smooth; }
                     >
                       <span>{item.label}</span>
                       <ArrowUpRight className="h-4 w-4" />
-                    </a>
+                    </button>
                   ))}
                 </div>
               </div>
 
               <div className="glass-panel rounded-3xl p-5">
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                  <Terminal className="h-4 w-4 text-[color:var(--accent)]" />
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
                   Quick actions
-                </div>
+                </p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <a
                     href={`mailto:${profile.email}`}
@@ -635,303 +1004,50 @@ html { scroll-behavior: smooth; }
               </div>
             </aside>
 
-            <main className="space-y-16">
-              <section id="impact" className="scroll-mt-28 space-y-10">
-                <div className="flex flex-wrap items-end justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                      Capability
-                    </p>
-                    <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-                      Systems you can trust at scale
-                    </h2>
-                  </div>
-                  <span className="font-mono text-xs text-[color:var(--accent-3)]">
-                    C++17/20 | Linux | GPU | Automation
-                  </span>
-                </div>
-
-                <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-                  <div className="space-y-4">
-                    <p className="text-[color:var(--muted)]">
-                      Systems engineering with obsessive profiling, secure automation, and hardware-level empathy. I
-                      design platform services that stay fast, safe, and observable under real device load.
-                    </p>
-                    <div className="space-y-3">
-                      {principles.map((principle) => (
-                        <div key={principle.title} className="glass-soft rounded-2xl p-4">
-                          <p className="text-sm font-semibold text-[color:var(--ink)]">{principle.title}</p>
-                          <p className="text-xs text-[color:var(--muted)]">{principle.detail}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {pillars.map((pillar, index) => {
-                      const Icon = pillar.icon;
-                      return (
-                        <div key={pillar.title} className="glass-panel rounded-3xl p-6 animate-rise" style={stagger(index)}>
-                          <div className="flex items-center gap-3">
-                            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[color:var(--accent)]">
-                              <Icon className="h-5 w-5" />
-                            </span>
-                            <h3 className="font-display text-lg font-semibold">{pillar.title}</h3>
-                          </div>
-                          <p className="mt-3 text-sm text-[color:var(--muted)]">{pillar.description}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </section>
-
-              <section id="work" className="scroll-mt-28">
-                <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-                  <div className="space-y-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                      Experience
-                    </p>
-                    <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-                      High-performance platforms for global devices
-                    </h2>
-                    <p className="text-[color:var(--muted)]">
-                      Leading platform initiatives across embedded Linux, GPU tooling, and automation for
-                      mission-critical device fleets.
-                    </p>
-                    <div className="glass-panel rounded-3xl p-5">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-[color:var(--accent-3)]">
-                        <Briefcase className="h-4 w-4" />
-                        Samsung R&D Institute
-                      </div>
-                      <p className="text-sm text-[color:var(--muted)]">
-                        Core Software Engineer | Noida, India | 01/2024 - Present
-                      </p>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {['Embedded Linux', 'C++17', 'MQTT', 'Automation', 'GPU Profiling'].map((item) => (
-                          <span
-                            key={item}
-                            className="rounded-full border border-[var(--stroke)] bg-white/70 px-3 py-1 text-xs font-mono text-[color:var(--accent-3)]"
-                          >
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="relative space-y-6">
-                    <div className="absolute left-3 top-3 h-full w-px bg-[var(--stroke)]" />
-                    {experienceHighlights.map((item, index) => (
-                      <div key={item.title} className="relative pl-10">
-                        <div className="absolute left-1.5 top-2 h-3.5 w-3.5 rounded-full bg-[var(--accent)] shadow-[0_0_0_6px_rgba(255,106,61,0.2)]" />
-                        <div className="glass-panel rounded-3xl p-5">
-                          <div className="flex items-center justify-between">
-                            <h3 className="font-display text-lg font-semibold">{item.title}</h3>
-                            <span className="font-mono text-xs text-[color:var(--muted)]">
-                              {String(index + 1).padStart(2, '0')}
-                            </span>
-                          </div>
-                          <p className="mt-2 text-sm text-[color:var(--muted)]">
-                            {viewMode === 'skim' ? item.summary : item.detail}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              <section id="projects" className="scroll-mt-28">
-                <div className="flex flex-wrap items-end justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                      Projects
-                    </p>
-                    <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-                      Hands-on builds beyond the day job
-                    </h2>
-                  </div>
-                  <span className="font-mono text-xs text-[color:var(--accent-3)]">
-                    C++ | AI | Real-time systems
-                  </span>
-                </div>
-
-                <div className="mt-8 grid gap-6 lg:grid-cols-2">
-                  {projects.map((project, index) => (
-                    <div key={project.title} className="glass-panel rounded-3xl p-6">
+            <div
+              ref={scrollRef}
+              className="scrollbar space-y-6 lg:h-[72vh] lg:overflow-y-auto lg:pr-2 lg:snap-y lg:snap-mandatory"
+            >
+              {chapterItems.map((chapter, index) => {
+                const Icon = chapter.icon;
+                return (
+                  <section key={chapter.id} id={chapter.id} className="snap-start scroll-mt-24">
+                    <div className="glass-panel min-h-[56vh] rounded-3xl p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent-2-soft)] text-[color:var(--accent-2)]">
-                            <Cpu className="h-5 w-5" />
+                            <Icon className="h-5 w-5" />
                           </span>
-                          <h3 className="font-display text-lg font-semibold">{project.title}</h3>
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
+                              {chapter.label}
+                            </p>
+                            <h3 className="font-display text-xl font-semibold">{chapter.title}</h3>
+                          </div>
                         </div>
-                        <span className="text-xs font-mono text-[color:var(--muted)]">Case {index + 1}</span>
-                      </div>
-                      <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
-                        {project.stack}
-                      </p>
-                      <p className="mt-3 text-sm text-[color:var(--muted)]">{project.summary}</p>
-                      {viewMode === 'deep' && (
-                        <ul className="mt-4 space-y-2 text-sm text-[color:var(--muted)]">
-                          {project.highlights.map((highlight) => (
-                            <li key={highlight} className="flex items-start gap-2">
-                              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--accent-2)]" />
-                              <span>{highlight}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section id="skills" className="scroll-mt-28">
-                <div className="flex flex-wrap items-end justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                      Toolbox
-                    </p>
-                    <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-                      The stack behind the systems
-                    </h2>
-                  </div>
-                  <span className="font-mono text-xs text-[color:var(--accent-3)]">
-                    Platforms, tooling, and emerging tech
-                  </span>
-                </div>
-
-                <div className="mt-8 grid gap-4 lg:grid-cols-2">
-                  {skills.map((skill) => (
-                    <div key={skill.label} className="glass-panel rounded-3xl p-6">
-                      <div className="flex items-center gap-3">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[color:var(--accent)]">
-                          <Code className="h-4 w-4" />
+                        <span className="text-xs font-mono text-[color:var(--muted)]">
+                          {String(index + 1).padStart(2, '0')}
                         </span>
-                        <h3 className="font-display text-lg font-semibold">{skill.label}</h3>
                       </div>
+                      <p className="mt-3 text-sm text-[color:var(--muted)]">{chapter.summary}</p>
                       <div className="mt-4 flex flex-wrap gap-2">
-                        {skill.items.map((item) => (
+                        {chapter.chips.map((chip) => (
                           <span
-                            key={item}
+                            key={chip}
                             className="rounded-full border border-[var(--stroke)] bg-white/70 px-3 py-1 text-xs font-mono text-[color:var(--accent-3)]"
                           >
-                            {item}
+                            {chip}
                           </span>
                         ))}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section id="recognition" className="scroll-mt-28">
-                <div className="flex flex-wrap items-end justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                      Recognition
-                    </p>
-                    <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-                      Awards and academic foundation
-                    </h2>
-                  </div>
-                  <span className="font-mono text-xs text-[color:var(--accent-3)]">
-                    Leadership and excellence
-                  </span>
-                </div>
-
-                <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-                  <div className="glass-panel rounded-3xl p-6">
-                    <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
-                      <Award className="h-4 w-4 text-[color:var(--accent)]" />
-                      Awards
-                    </div>
-                    <div className="mt-4 space-y-4">
-                      {awards.map((award) => (
-                        <div key={award.title} className="rounded-2xl border border-[var(--stroke)] bg-white/80 p-4">
-                          <h3 className="font-display text-lg font-semibold">{award.title}</h3>
-                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
-                            {award.org}
-                          </p>
-                          <p className="mt-2 text-sm text-[color:var(--muted)]">{award.detail}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="glass-panel rounded-3xl p-6">
-                    <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
-                      <GraduationCap className="h-4 w-4 text-[color:var(--accent)]" />
-                      Education
-                    </div>
-                    <div className="mt-4 rounded-2xl border border-[var(--stroke)] bg-white/80 p-5">
-                      <h3 className="font-display text-lg font-semibold">{education.degree}</h3>
-                      <p className="text-sm text-[color:var(--accent-3)]">{education.school}</p>
-                      <p className="text-sm text-[color:var(--muted)]">
-                        {education.location} | {education.period}
-                      </p>
-                      <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-[color:var(--accent-3)]">
-                        <span className="font-mono">CGPA</span>
-                        <span className="rounded-full bg-[var(--accent-soft)] px-3 py-1 text-[color:var(--accent)]">
-                          {education.cgpa}
-                        </span>
-                      </div>
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {education.courses.map((course) => (
-                          <span
-                            key={course}
-                            className="rounded-full border border-[var(--stroke)] bg-white/70 px-3 py-1 text-xs font-mono text-[color:var(--accent-3)]"
-                          >
-                            {course}
-                          </span>
-                        ))}
+                      <div className="mt-6 rounded-2xl border border-[var(--stroke)] bg-white/70 p-4 text-xs text-[color:var(--muted)]">
+                        Details update in the Focus Deck on the left. Use Prev/Next to browse without scrolling.
                       </div>
                     </div>
-                  </div>
-                </div>
-              </section>
-
-              <section id="contact" className="scroll-mt-28">
-                <div className="rounded-3xl bg-gradient-to-br from-[var(--accent-2-soft)] via-transparent to-[var(--accent-soft)] p-[1px]">
-                  <div className="glass-panel rounded-3xl p-8">
-                    <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                          Let's build
-                        </p>
-                        <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-                          Ready for high-stakes systems work
-                        </h2>
-                        <p className="mt-2 text-sm text-[color:var(--muted)]">
-                          Reach out for platform engineering, embedded systems, or performance-critical C++ roles.
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-3">
-                        <a
-                          href={`mailto:${profile.email}`}
-                          className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5"
-                        >
-                          <Mail className="h-4 w-4" />
-                          Start a conversation
-                          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                        </a>
-                        <a
-                          href={links.linkedin}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="group inline-flex items-center gap-2 rounded-full border border-[var(--stroke)] bg-white/80 px-5 py-3 text-sm font-semibold text-[color:var(--accent-3)] transition-transform hover:-translate-y-0.5 hover:bg-white"
-                        >
-                          LinkedIn
-                          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </main>
+                  </section>
+                );
+              })}
+            </div>
           </div>
 
           <footer className="mt-16 text-center text-xs text-[color:var(--muted)] font-mono">
@@ -943,7 +1059,7 @@ html { scroll-behavior: smooth; }
       {showTop && (
         <button
           type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={scrollToTop}
           className="fixed bottom-6 right-6 z-50 rounded-full bg-[var(--accent)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white shadow-[var(--shadow)] transition-transform hover:-translate-y-1"
         >
           Back to top
