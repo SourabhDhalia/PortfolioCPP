@@ -1,1 +1,1 @@
-export { default } from '../resumePotfolioSite';
+export { default } from './Portfolio';
