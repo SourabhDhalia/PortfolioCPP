@@ -5,11 +5,14 @@ import {
   Briefcase,
   Code,
   Cpu,
+  Gauge,
   Github,
   GraduationCap,
   Linkedin,
   Mail,
   MapPin,
+  Network,
+  ShieldCheck,
   Sparkles,
   Terminal,
   Youtube,
@@ -39,7 +42,7 @@ const Resume = () => {
   const githubPagesUrl = `https://${links.githubUsername}.github.io/${links.repoName}`;
 
   const navItems = [
-    { id: 'impact', label: 'Impact' },
+    { id: 'impact', label: 'Capability' },
     { id: 'work', label: 'Work' },
     { id: 'projects', label: 'Projects' },
     { id: 'skills', label: 'Toolbox' },
@@ -48,10 +51,48 @@ const Resume = () => {
   ];
 
   const stats = [
-    { value: '70%', label: 'Boot latency reduction' },
-    { value: '800+', label: 'Memory violations resolved' },
-    { value: '9 yrs', label: 'Legacy OS compatibility' },
-    { value: 'Global', label: 'Device automation footprint' }
+    { value: '70%', label: 'Boot latency reduction', meter: 70 },
+    { value: '800+', label: 'Memory violations resolved', meter: 88 },
+    { value: '9 yrs', label: 'Legacy OS compatibility', meter: 80 },
+    { value: 'Global', label: 'Device automation footprint', meter: 76 }
+  ];
+
+  const focusAreas = [
+    {
+      title: 'Automation Bus',
+      detail: 'Remote orchestration for media validation at scale.',
+      icon: Network
+    },
+    {
+      title: 'Latency Tuning',
+      detail: 'Syscall profiling, LRU caching, and boot wins.',
+      icon: Gauge
+    },
+    {
+      title: 'Memory Safety',
+      detail: 'ASAN + Valgrind hygiene for long-lived services.',
+      icon: ShieldCheck
+    },
+    {
+      title: 'Graphics Pipelines',
+      detail: 'OpenGL ES profiling with Streamline + PVRTune.',
+      icon: Cpu
+    }
+  ];
+
+  const principles = [
+    {
+      title: 'Latency obsession',
+      detail: 'Measure, profile, and remove the slow path at every layer.'
+    },
+    {
+      title: 'Reliability by default',
+      detail: 'RAII, strict error handling, and memory instrumentation.'
+    },
+    {
+      title: 'Secure automation',
+      detail: 'Access-controlled orchestration across MQTT + IPC boundaries.'
+    }
   ];
 
   const pillars = [
@@ -123,38 +164,54 @@ const Resume = () => {
     {
       title: '3D Zombie Hunter',
       stack: 'Unreal Engine, C++, Blueprints, Autodesk Maya',
-      description:
-        'Developed AI behavior trees and state-machine logic in C++ and Blueprints, with exposure to OpenGL, image compression, and video processing.'
+      summary:
+        'Built a performance-first gameplay loop with AI-driven enemies and real-time systems engineering.',
+      highlights: [
+        'AI behavior trees and state machines in C++ and Blueprints.',
+        'Realtime gameplay systems with performance-first update loops.',
+        'Exposure to OpenGL, image compression, and video processing.'
+      ]
     },
     {
       title: 'GenAI Linux Server & RAG Pipeline',
       stack: 'Linux, LLMs, Python',
-      description:
-        'Configured and secured a remote Linux server to host LLMs via SSH, and built a RAG pipeline for context-aware querying over local technical documentation.'
+      summary:
+        'Delivered a secure LLM stack and retrieval pipeline for local, context-aware technical search.',
+      highlights: [
+        'Secured remote Linux inference stack accessed via SSH.',
+        'RAG pipeline for local technical documentation search.',
+        'Context-aware querying optimized for restricted networks.'
+      ]
     }
   ];
 
   const skills = [
     {
       label: 'Languages',
-      items: 'C++ (11/14/17, STL), C, Python, C#, JavaScript, Shell Scripting'
+      items: ['C++ (11/14/17, STL)', 'C', 'Python', 'C#', 'JavaScript', 'Shell Scripting']
     },
     {
       label: 'System & OS',
-      items:
-        'Linux system programming, Tizen OS, IPC (shared memory, sockets, RPC), multithreading (pthreads, GMainLoop), synchronization, memory management (corruption, leaks)'
+      items: [
+        'Linux system programming',
+        'Tizen OS',
+        'IPC (shared memory, sockets, RPC)',
+        'Multithreading (pthreads, GMainLoop)',
+        'Synchronization',
+        'Memory management (corruption, leaks)'
+      ]
     },
     {
       label: 'Graphics & GPU',
-      items: 'OpenGL ES, EGL, GPU profiling (Streamline, PVRTune), shader optimization, Unreal Engine'
+      items: ['OpenGL ES', 'EGL', 'GPU profiling (Streamline, PVRTune)', 'Shader optimization', 'Unreal Engine']
     },
     {
       label: 'Tools & Networking',
-      items: 'CMake, GCC/GDB, Valgrind, ASAN, Git, Perforce, MQTT v5, TCP/IP, REST'
+      items: ['CMake', 'GCC/GDB', 'Valgrind', 'ASAN', 'Git', 'Perforce', 'MQTT v5', 'TCP/IP', 'REST']
     },
     {
       label: 'Emerging Tech',
-      items: 'GenAI, LLMs (Ollama), RAG, model fine-tuning'
+      items: ['GenAI', 'LLMs (Ollama)', 'RAG', 'Model fine-tuning']
     }
   ];
 
@@ -178,27 +235,34 @@ const Resume = () => {
     school: 'J.C. Bose University of Science and Technology, YMCA (Formerly YMCA UST)',
     location: 'Faridabad, India',
     period: '2019 - 2023',
-    focus:
-      'Key Courses: C++, Data Structures & Algorithms, Operating Systems, Object-Oriented Programming, Computer Networks, DBMS',
+    courses: [
+      'C++',
+      'Data Structures & Algorithms',
+      'Operating Systems',
+      'Object-Oriented Programming',
+      'Computer Networks',
+      'DBMS'
+    ],
     cgpa: '8.1'
   };
 
   const rootStyle = {
-    '--paper': '#f6f1e8',
+    '--bg': '#f4f2ee',
     '--ink': '#0b1a24',
-    '--muted': '#52606d',
-    '--accent': '#f26b3a',
-    '--accent-soft': 'rgba(242, 107, 58, 0.12)',
+    '--muted': '#465865',
+    '--accent': '#ff6a3d',
+    '--accent-soft': 'rgba(255, 106, 61, 0.18)',
     '--accent-2': '#0ea5a4',
-    '--accent-2-soft': 'rgba(14, 165, 164, 0.12)',
-    '--accent-3': '#1c4966',
-    '--panel': 'rgba(255, 255, 255, 0.82)',
-    '--panel-strong': '#ffffff',
-    '--stroke': 'rgba(15, 30, 44, 0.12)',
-    '--shadow': '0 28px 60px rgba(11, 26, 36, 0.16)',
-    '--font-display': "'Space Grotesk', sans-serif",
-    '--font-body': "'Manrope', sans-serif",
-    '--font-mono': "'IBM Plex Mono', monospace"
+    '--accent-2-soft': 'rgba(14, 165, 164, 0.16)',
+    '--accent-3': '#1c4e80',
+    '--accent-3-soft': 'rgba(28, 78, 128, 0.12)',
+    '--surface': 'rgba(255, 255, 255, 0.86)',
+    '--surface-strong': '#ffffff',
+    '--stroke': 'rgba(11, 26, 36, 0.12)',
+    '--shadow': '0 30px 80px rgba(11, 26, 36, 0.16)',
+    '--font-display': "'Sora', sans-serif",
+    '--font-body': "'Plus Jakarta Sans', sans-serif",
+    '--font-mono': "'JetBrains Mono', monospace"
   } as React.CSSProperties;
 
   const stagger = (index: number): React.CSSProperties => ({
@@ -208,11 +272,35 @@ const Resume = () => {
   return (
     <div className="min-h-screen font-body text-[color:var(--ink)]" style={rootStyle}>
       <style>{`
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap');
 
 .font-display { font-family: var(--font-display); }
 .font-body { font-family: var(--font-body); }
 .font-mono { font-family: var(--font-mono); }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.panel-strong {
+  background: var(--surface-strong);
+}
+
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--accent-2);
+  box-shadow: 0 0 0 4px var(--accent-2-soft);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+.timeline-dot {
+  box-shadow: 0 0 0 6px var(--accent-soft);
+}
 
 @keyframes rise {
   from { opacity: 0; transform: translateY(18px); }
@@ -229,6 +317,11 @@ const Resume = () => {
   to { opacity: 1; transform: translateX(0); }
 }
 
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+
 .animate-rise { animation: rise 0.8s ease-out both; }
 .animate-float { animation: float 9s ease-in-out infinite; }
 .animate-sweep { animation: sweep 0.8s ease-out both; }
@@ -236,34 +329,37 @@ const Resume = () => {
 @media (prefers-reduced-motion: reduce) {
   .animate-rise,
   .animate-float,
-  .animate-sweep {
+  .animate-sweep,
+  .status-dot {
     animation: none;
   }
 }
       `}</style>
-      <div className="relative overflow-hidden">
+
+      <div className="relative overflow-hidden bg-[color:var(--bg)]">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-40 left-[-120px] h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,rgba(242,107,58,0.32),transparent_60%)] blur-3xl animate-float" />
+          <div className="absolute -top-32 right-[-120px] h-[420px] w-[420px] rounded-full bg-[radial-gradient(circle_at_center,rgba(255,106,61,0.32),transparent_60%)] blur-3xl animate-float" />
           <div
-            className="absolute right-[-160px] top-12 h-[480px] w-[480px] rounded-full bg-[radial-gradient(circle_at_center,rgba(14,165,164,0.28),transparent_60%)] blur-3xl animate-float"
-            style={{ animationDelay: '1.8s' }}
+            className="absolute left-[-160px] top-24 h-[520px] w-[520px] rounded-full bg-[radial-gradient(circle_at_center,rgba(14,165,164,0.28),transparent_60%)] blur-3xl animate-float"
+            style={{ animationDelay: '2s' }}
           />
-          <div className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(12,24,35,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(12,24,35,0.08)_1px,transparent_1px)] [background-size:48px_48px]" />
+          <div className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(11,26,36,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(11,26,36,0.08)_1px,transparent_1px)] [background-size:48px_48px]" />
+          <div className="absolute inset-0 opacity-25 [background-image:radial-gradient(circle_at_center,rgba(14,165,164,0.2)_1px,transparent_1px)] [background-size:180px_180px]" />
         </div>
 
-        <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-16 lg:px-10">
-          <header className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--stroke)] bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)] shadow-sm animate-rise">
-                <Sparkles className="h-4 w-4 text-[var(--accent)]" />
+        <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-14 lg:px-10">
+          <header className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="space-y-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--stroke)] bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)] shadow-sm animate-rise">
+                <Sparkles className="h-4 w-4 text-[color:var(--accent)]" />
                 2026 systems portfolio
               </div>
 
-              <div className="space-y-4 animate-rise" style={stagger(1)}>
-                <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[color:var(--accent-3)]">
+              <div className="space-y-5 animate-rise" style={stagger(1)}>
+                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[color:var(--accent-3)]">
                   {profile.role}
                 </p>
-                <h1 className="font-display text-4xl font-semibold sm:text-5xl lg:text-6xl">
+                <h1 className="font-display text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
                   {profile.firstName}{' '}
                   <span className="text-[color:var(--accent)]">{profile.lastName}</span>
                 </h1>
@@ -311,108 +407,90 @@ const Resume = () => {
                 </a>
               </div>
 
-              <div className="flex flex-wrap gap-2 animate-rise" style={stagger(3)}>
-                {['C++17/20', 'Embedded Linux', 'GPU profiling', 'Device automation', 'IPC + MQTT'].map(
-                  (item) => (
-                    <span
-                      key={item}
-                      className="rounded-full border border-[var(--stroke)] bg-white/70 px-3 py-1 text-xs font-mono text-[color:var(--accent-3)]"
-                    >
-                      {item}
-                    </span>
-                  )
-                )}
-              </div>
-            </div>
-
-            <div
-              className="rounded-3xl border border-[var(--stroke)] bg-[var(--panel)] p-6 shadow-[var(--shadow)] backdrop-blur animate-rise"
-              style={stagger(2)}
-            >
-              <div className="flex items-center justify-between">
-                <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--accent-3)]">Impact</p>
-                <span className="rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--accent)]">
-                  2026 ready
-                </span>
-              </div>
-
-              <div className="mt-6 grid gap-4">
-                {stats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="rounded-2xl border border-[var(--stroke)] bg-white/75 p-4"
-                  >
-                    <p className="font-display text-2xl font-semibold text-[color:var(--accent-3)]">
-                      {stat.value}
-                    </p>
-                    <p className="text-sm text-[color:var(--muted)]">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 flex items-center gap-4 rounded-2xl border border-[var(--stroke)] bg-white/75 p-4">
-                <div className="relative">
-                  <div className="absolute -inset-1 rounded-2xl bg-[var(--accent-soft)]" />
-                  <img
-                    src={profile.photo}
-                    alt={`${profile.firstName} ${profile.lastName}`}
-                    className="relative h-16 w-16 rounded-2xl border border-[var(--stroke)] object-cover"
-                    loading="lazy"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[color:var(--accent-3)]">
-                    {profile.firstName} {profile.lastName}
-                  </p>
-                  <p className="text-xs text-[color:var(--muted)]">{profile.role}</p>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3 rounded-2xl border border-[var(--stroke)] bg-white/75 p-4">
-                <div className="flex items-center gap-2 text-sm font-semibold text-[color:var(--accent-3)]">
-                  <Briefcase className="h-4 w-4" />
-                  Samsung R&D Institute
-                </div>
-                <p className="text-sm text-[color:var(--muted)]">
-                  Core Software Engineer | 01/2024 - Present
-                </p>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                {[
-                  { icon: Mail, label: profile.email, href: `mailto:${profile.email}` },
-                  { icon: MapPin, label: profile.location }
-                ].map((item) => {
-                  const Icon = item.icon;
+              <div className="grid gap-3 md:grid-cols-2 animate-rise" style={stagger(3)}>
+                {focusAreas.map((area) => {
+                  const Icon = area.icon;
                   return (
-                    <div key={item.label} className="flex items-center gap-3 text-sm text-[color:var(--muted)]">
-                      <Icon className="h-4 w-4 text-[color:var(--accent-3)]" />
-                      {item.href ? (
-                        <a href={item.href} className="hover:text-[color:var(--accent-3)]">
-                          {item.label}
-                        </a>
-                      ) : (
-                        <span>{item.label}</span>
-                      )}
+                    <div key={area.title} className="panel rounded-2xl p-4">
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--accent-2-soft)] text-[color:var(--accent-2)]">
+                          <Icon className="h-4 w-4" />
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-[color:var(--ink)]">{area.title}</p>
+                          <p className="text-xs text-[color:var(--muted)]">{area.detail}</p>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
               </div>
+            </div>
 
-              <div className="mt-6 space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                  Online
-                </p>
-                <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
-                  <a
-                    href={links.linkedin}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 hover:text-[color:var(--accent)]"
-                  >
-                    <Linkedin className="h-3.5 w-3.5" />
-                    LinkedIn
-                  </a>
+            <div className="space-y-6">
+              <div className="panel rounded-3xl p-6 animate-rise" style={stagger(2)}>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs uppercase tracking-[0.3em] text-[color:var(--accent-3)]">System index</p>
+                  <span className="inline-flex items-center gap-2 rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--accent)]">
+                    <span className="status-dot" />
+                    Available 2026
+                  </span>
+                </div>
+
+                <div className="mt-6 grid gap-4">
+                  {stats.map((stat) => (
+                    <div key={stat.label} className="rounded-2xl border border-[var(--stroke)] bg-white/75 p-4">
+                      <div className="flex items-center justify-between">
+                        <p className="font-display text-2xl font-semibold text-[color:var(--accent-3)]">
+                          {stat.value}
+                        </p>
+                        <span className="text-xs font-mono text-[color:var(--muted)]">{stat.meter}%</span>
+                      </div>
+                      <p className="text-sm text-[color:var(--muted)]">{stat.label}</p>
+                      <div className="mt-3 h-1.5 rounded-full bg-[var(--accent-soft)]">
+                        <div
+                          className="h-full rounded-full bg-[color:var(--accent-2)]"
+                          style={{ width: `${stat.meter}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="panel rounded-3xl p-6 animate-rise" style={stagger(3)}>
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute -inset-1 rounded-2xl bg-[var(--accent-soft)]" />
+                    <img
+                      src={profile.photo}
+                      alt={`${profile.firstName} ${profile.lastName}`}
+                      className="relative h-16 w-16 rounded-2xl border border-[var(--stroke)] object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-display text-lg font-semibold">
+                      {profile.firstName} {profile.lastName}
+                    </p>
+                    <p className="text-sm text-[color:var(--muted)]">{profile.role}</p>
+                    <div className="mt-2 flex items-center gap-2 text-xs text-[color:var(--accent-3)]">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {profile.location}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 space-y-3 text-sm text-[color:var(--muted)]">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-4 w-4 text-[color:var(--accent-3)]" />
+                    <a href={`mailto:${profile.email}`} className="hover:text-[color:var(--accent-3)]">
+                      {profile.email}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
                   <a
                     href={links.github}
                     target="_blank"
@@ -421,6 +499,15 @@ const Resume = () => {
                   >
                     <Github className="h-3.5 w-3.5" />
                     GitHub
+                  </a>
+                  <a
+                    href={links.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 hover:text-[color:var(--accent)]"
+                  >
+                    <Linkedin className="h-3.5 w-3.5" />
+                    LinkedIn
                   </a>
                   <a
                     href={links.youtube}
@@ -434,21 +521,36 @@ const Resume = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-2">
-                <a
-                  href={githubPagesUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group inline-flex items-center gap-2 rounded-full border border-[var(--stroke)] bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)] transition-transform hover:-translate-y-0.5 hover:bg-white"
-                >
-                  GitHub Pages
-                  <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-                </a>
+              <div className="panel rounded-3xl p-6 animate-rise" style={stagger(4)}>
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
+                  <Terminal className="h-4 w-4 text-[color:var(--accent)]" />
+                  Quick actions
+                </div>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <a
+                    href={githubPagesUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5"
+                  >
+                    Live site
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                  <a
+                    href={links.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex items-center gap-2 rounded-full border border-[var(--stroke)] bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)] transition-transform hover:-translate-y-0.5"
+                  >
+                    Repo
+                    <ArrowUpRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                  </a>
+                </div>
               </div>
             </div>
           </header>
 
-          <nav className="sticky top-6 z-20 mt-12 flex flex-wrap gap-3 rounded-full border border-[var(--stroke)] bg-white/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--accent-3)] shadow-sm backdrop-blur animate-sweep">
+          <nav className="sticky top-6 z-20 mt-12 flex flex-wrap gap-2 rounded-full border border-[var(--stroke)] bg-white/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-[color:var(--accent-3)] shadow-sm backdrop-blur animate-sweep">
             {navItems.map((item) => (
               <a
                 key={item.id}
@@ -460,11 +562,11 @@ const Resume = () => {
             ))}
           </nav>
 
-          <section id="impact" className="mt-20 space-y-8">
+          <section id="impact" className="mt-20 space-y-10">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                  Engineering focus
+                  Capability
                 </p>
                 <h2 className="font-display text-2xl font-semibold sm:text-3xl">
                   Systems you can trust at scale
@@ -475,30 +577,43 @@ const Resume = () => {
               </span>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              {pillars.map((pillar, index) => {
-                const Icon = pillar.icon;
-                return (
-                  <div
-                    key={pillar.title}
-                    className="rounded-3xl border border-[var(--stroke)] bg-[var(--panel)] p-6 shadow-[var(--shadow)] backdrop-blur animate-rise"
-                    style={stagger(index)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[color:var(--accent)]">
-                        <Icon className="h-5 w-5" />
-                      </span>
-                      <h3 className="font-display text-lg font-semibold">{pillar.title}</h3>
+            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+              <div className="space-y-4">
+                <p className="text-[color:var(--muted)]">
+                  Systems engineering with obsessive profiling, secure automation, and hardware-level empathy. I design
+                  platform services that stay fast, safe, and observable under real device load.
+                </p>
+                <div className="space-y-3">
+                  {principles.map((principle) => (
+                    <div key={principle.title} className="panel rounded-2xl p-4">
+                      <p className="text-sm font-semibold text-[color:var(--ink)]">{principle.title}</p>
+                      <p className="text-xs text-[color:var(--muted)]">{principle.detail}</p>
                     </div>
-                    <p className="mt-3 text-sm text-[color:var(--muted)]">{pillar.description}</p>
-                  </div>
-                );
-              })}
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {pillars.map((pillar, index) => {
+                  const Icon = pillar.icon;
+                  return (
+                    <div key={pillar.title} className="panel rounded-3xl p-6 animate-rise" style={stagger(index)}>
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[color:var(--accent)]">
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <h3 className="font-display text-lg font-semibold">{pillar.title}</h3>
+                      </div>
+                      <p className="mt-3 text-sm text-[color:var(--muted)]">{pillar.description}</p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </section>
 
           <section id="work" className="mt-20">
-            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
               <div className="space-y-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
                   Experience
@@ -507,29 +622,44 @@ const Resume = () => {
                   High-performance platforms for global devices
                 </h2>
                 <p className="text-[color:var(--muted)]">
-                  Leading platform initiatives across embedded Linux, GPU tooling, and automation
-                  for mission-critical device fleets.
+                  Leading platform initiatives across embedded Linux, GPU tooling, and automation for
+                  mission-critical device fleets.
                 </p>
-                <div className="rounded-2xl border border-[var(--stroke)] bg-white/80 p-4">
+                <div className="panel rounded-3xl p-5">
                   <div className="flex items-center gap-2 text-sm font-semibold text-[color:var(--accent-3)]">
-                  <Briefcase className="h-4 w-4" />
-                  Samsung R&D Institute
+                    <Briefcase className="h-4 w-4" />
+                    Samsung R&D Institute
+                  </div>
+                  <p className="text-sm text-[color:var(--muted)]">
+                    Core Software Engineer | Noida, India | 01/2024 - Present
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {['Embedded Linux', 'C++17', 'MQTT', 'Automation', 'GPU Profiling'].map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full border border-[var(--stroke)] bg-white/70 px-3 py-1 text-xs font-mono text-[color:var(--accent-3)]"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-sm text-[color:var(--muted)]">
-                  Core Software Engineer | Noida, India | 01/2024 - Present
-                </p>
-              </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="relative space-y-6">
+                <div className="absolute left-3 top-3 h-full w-px bg-[var(--stroke)]" />
                 {experienceHighlights.map((item, index) => (
-                  <div
-                    key={item.title}
-                    className="rounded-3xl border border-[var(--stroke)] bg-[var(--panel)] p-5 shadow-[var(--shadow)] backdrop-blur animate-rise"
-                    style={stagger(index)}
-                  >
-                    <h3 className="font-display text-lg font-semibold">{item.title}</h3>
-                    <p className="mt-2 text-sm text-[color:var(--muted)]">{item.detail}</p>
+                  <div key={item.title} className="relative pl-10">
+                    <div className="timeline-dot absolute left-1.5 top-2 h-3.5 w-3.5 rounded-full bg-[var(--accent)]" />
+                    <div className="panel rounded-3xl p-5">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-display text-lg font-semibold">{item.title}</h3>
+                        <span className="font-mono text-xs text-[color:var(--muted)]">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm text-[color:var(--muted)]">{item.detail}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -553,21 +683,28 @@ const Resume = () => {
 
             <div className="mt-8 grid gap-6 lg:grid-cols-2">
               {projects.map((project, index) => (
-                <div
-                  key={project.title}
-                  className="group rounded-3xl border border-[var(--stroke)] bg-[var(--panel)] p-6 shadow-[var(--shadow)] backdrop-blur transition-transform hover:-translate-y-1 animate-rise"
-                  style={stagger(index)}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent-2-soft)] text-[color:var(--accent-2)]">
-                      <Cpu className="h-5 w-5" />
-                    </span>
-                    <h3 className="font-display text-lg font-semibold">{project.title}</h3>
+                <div key={project.title} className="panel rounded-3xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--accent-2-soft)] text-[color:var(--accent-2)]">
+                        <Cpu className="h-5 w-5" />
+                      </span>
+                      <h3 className="font-display text-lg font-semibold">{project.title}</h3>
+                    </div>
+                    <span className="text-xs font-mono text-[color:var(--muted)]">Case {index + 1}</span>
                   </div>
                   <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
                     {project.stack}
                   </p>
-                  <p className="mt-3 text-sm text-[color:var(--muted)]">{project.description}</p>
+                  <p className="mt-3 text-sm text-[color:var(--muted)]">{project.summary}</p>
+                  <ul className="mt-4 space-y-2 text-sm text-[color:var(--muted)]">
+                    {project.highlights.map((highlight) => (
+                      <li key={highlight} className="flex items-start gap-2">
+                        <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--accent-2)]" />
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
@@ -588,20 +725,25 @@ const Resume = () => {
               </span>
             </div>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {skills.map((skill, index) => (
-                <div
-                  key={skill.label}
-                  className="rounded-3xl border border-[var(--stroke)] bg-[var(--panel)] p-6 shadow-[var(--shadow)] backdrop-blur animate-rise"
-                  style={stagger(index)}
-                >
+            <div className="mt-8 grid gap-4 lg:grid-cols-2">
+              {skills.map((skill) => (
+                <div key={skill.label} className="panel rounded-3xl p-6">
                   <div className="flex items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--accent-soft)] text-[color:var(--accent)]">
                       <Code className="h-4 w-4" />
                     </span>
                     <h3 className="font-display text-lg font-semibold">{skill.label}</h3>
                   </div>
-                  <p className="mt-3 text-sm text-[color:var(--muted)]">{skill.items}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {skill.items.map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full border border-[var(--stroke)] bg-white/70 px-3 py-1 text-xs font-mono text-[color:var(--accent-3)]"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -622,24 +764,26 @@ const Resume = () => {
               </span>
             </div>
 
-            <div className="mt-8 grid gap-6 lg:grid-cols-2">
-              <div className="space-y-4 rounded-3xl border border-[var(--stroke)] bg-[var(--panel)] p-6 shadow-[var(--shadow)] backdrop-blur">
+            <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="panel rounded-3xl p-6">
                 <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
                   <Award className="h-4 w-4 text-[color:var(--accent)]" />
                   Awards
                 </div>
-                {awards.map((award) => (
-                  <div key={award.title} className="rounded-2xl border border-[var(--stroke)] bg-white/80 p-4">
-                    <h3 className="font-display text-lg font-semibold">{award.title}</h3>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
-                      {award.org}
-                    </p>
-                    <p className="mt-2 text-sm text-[color:var(--muted)]">{award.detail}</p>
-                  </div>
-                ))}
+                <div className="mt-4 space-y-4">
+                  {awards.map((award) => (
+                    <div key={award.title} className="rounded-2xl border border-[var(--stroke)] bg-white/80 p-4">
+                      <h3 className="font-display text-lg font-semibold">{award.title}</h3>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
+                        {award.org}
+                      </p>
+                      <p className="mt-2 text-sm text-[color:var(--muted)]">{award.detail}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="rounded-3xl border border-[var(--stroke)] bg-[var(--panel)] p-6 shadow-[var(--shadow)] backdrop-blur">
+              <div className="panel rounded-3xl p-6">
                 <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-3)]">
                   <GraduationCap className="h-4 w-4 text-[color:var(--accent)]" />
                   Education
@@ -656,51 +800,62 @@ const Resume = () => {
                       {education.cgpa}
                     </span>
                   </div>
-                  <p className="mt-3 text-sm text-[color:var(--muted)]">{education.focus}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {education.courses.map((course) => (
+                      <span
+                        key={course}
+                        className="rounded-full border border-[var(--stroke)] bg-white/70 px-3 py-1 text-xs font-mono text-[color:var(--accent-3)]"
+                      >
+                        {course}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </section>
 
           <section id="contact" className="mt-20">
-            <div className="rounded-3xl border border-[var(--stroke)] bg-[var(--panel)] p-8 shadow-[var(--shadow)] backdrop-blur">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
-                    Let's build
-                  </p>
-                  <h2 className="font-display text-2xl font-semibold sm:text-3xl">
-                    Ready for high-stakes systems work
-                  </h2>
-                  <p className="mt-2 text-sm text-[color:var(--muted)]">
-                    Reach out for platform engineering, embedded systems, or performance-critical C++ roles.
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <a
-                    href={`mailto:${profile.email}`}
-                    className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5"
-                  >
-                    <Mail className="h-4 w-4" />
-                    Start a conversation
-                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </a>
-                  <a
-                    href={githubPagesUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group inline-flex items-center gap-2 rounded-full border border-[var(--stroke)] bg-white/80 px-5 py-3 text-sm font-semibold text-[color:var(--accent-3)] transition-transform hover:-translate-y-0.5 hover:bg-white"
-                  >
-                    View GitHub Pages
-                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </a>
+            <div className="rounded-3xl bg-gradient-to-br from-[var(--accent-2-soft)] via-transparent to-[var(--accent-soft)] p-[1px]">
+              <div className="panel rounded-3xl p-8">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--accent-3)]">
+                      Let's build
+                    </p>
+                    <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+                      Ready for high-stakes systems work
+                    </h2>
+                    <p className="mt-2 text-sm text-[color:var(--muted)]">
+                      Reach out for platform engineering, embedded systems, or performance-critical C++ roles.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <a
+                      href={`mailto:${profile.email}`}
+                      className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5"
+                    >
+                      <Mail className="h-4 w-4" />
+                      Start a conversation
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </a>
+                    <a
+                      href={links.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group inline-flex items-center gap-2 rounded-full border border-[var(--stroke)] bg-white/80 px-5 py-3 text-sm font-semibold text-[color:var(--accent-3)] transition-transform hover:-translate-y-0.5 hover:bg-white"
+                    >
+                      LinkedIn
+                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
 
-          <footer className="mt-16 text-center text-xs text-[color:var(--muted)]">
-            Built for GitHub Pages, optimized for modern 2026 portfolio standards.
+          <footer className="mt-16 text-center text-xs text-[color:var(--muted)] font-mono">
+            Built for GitHub Pages. Crafted for 2026-ready systems portfolios.
           </footer>
         </div>
       </div>
