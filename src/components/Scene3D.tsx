@@ -10,38 +10,44 @@ const SimpleBackground = () => (
         {/* Base gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0f] via-[#12121a] to-[#0a0a0f]" />
 
-        {/* Animated orbs using CSS */}
+        {/* Animated orbs - optimized with will-change and reduced blur */}
         <motion.div
-            className="absolute w-[500px] h-[500px] rounded-full blur-[120px] opacity-30"
-            style={{ background: 'radial-gradient(circle, #ff6b35 0%, transparent 70%)' }}
+            className="absolute w-[500px] h-[500px] rounded-full blur-[80px] opacity-25"
+            style={{
+                background: 'radial-gradient(circle, #ff6b35 0%, transparent 70%)',
+                willChange: 'transform'
+            }}
             animate={{
                 x: ['-10%', '5%', '-10%'],
                 y: ['-20%', '-10%', '-20%'],
-                scale: [1, 1.1, 1],
             }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+            transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
             initial={{ top: '-10%', right: '-5%' }}
         />
         <motion.div
-            className="absolute w-[400px] h-[400px] rounded-full blur-[100px] opacity-25"
-            style={{ background: 'radial-gradient(circle, #00d4aa 0%, transparent 70%)' }}
+            className="absolute w-[400px] h-[400px] rounded-full blur-[60px] opacity-20"
+            style={{
+                background: 'radial-gradient(circle, #00d4aa 0%, transparent 70%)',
+                willChange: 'transform'
+            }}
             animate={{
                 x: ['0%', '10%', '0%'],
                 y: ['0%', '-10%', '0%'],
-                scale: [1, 0.9, 1],
             }}
-            transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+            transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
             initial={{ bottom: '-15%', left: '-10%' }}
         />
         <motion.div
-            className="absolute w-[300px] h-[300px] rounded-full blur-[80px] opacity-20"
-            style={{ background: 'radial-gradient(circle, #6366f1 0%, transparent 70%)' }}
+            className="absolute w-[300px] h-[300px] rounded-full blur-[50px] opacity-15"
+            style={{
+                background: 'radial-gradient(circle, #6366f1 0%, transparent 70%)',
+                willChange: 'transform'
+            }}
             animate={{
                 x: ['-5%', '5%', '-5%'],
                 y: ['0%', '5%', '0%'],
-                scale: [0.9, 1.1, 0.9],
             }}
-            transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
+            transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
             initial={{ top: '40%', left: '25%' }}
         />
 

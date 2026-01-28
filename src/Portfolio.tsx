@@ -59,24 +59,20 @@ const ImpactSection = () => (
     {/* Stats Grid */}
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat, i) => (
-        <motion.div
+        <div
           key={stat.label}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.1 }}
-          className="stat-card"
+          className="stat-card animate-fade-in"
+          style={{ animationDelay: `${i * 50}ms` }}
         >
           <p className="stat-value">{stat.value}</p>
           <p className="stat-label">{stat.label}</p>
           <div className="meter mt-3">
-            <motion.div
-              className="meter-fill"
-              initial={{ width: 0 }}
-              animate={{ width: `${stat.meter}%` }}
-              transition={{ delay: 0.3 + i * 0.1, duration: 0.8 }}
+            <div
+              className="meter-fill animate-meter"
+              style={{ '--meter-width': `${stat.meter}%`, animationDelay: `${200 + i * 50}ms` } as React.CSSProperties}
             />
           </div>
-        </motion.div>
+        </div>
       ))}
     </div>
 
@@ -85,19 +81,17 @@ const ImpactSection = () => (
       {focusAreas.map((area, i) => {
         const Icon = area.icon;
         return (
-          <motion.div
+          <div
             key={area.title}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 + i * 0.1 }}
-            className="glass-card rounded-2xl p-5 group hover:border-[var(--border-accent)] transition-all"
+            className="glass-card rounded-2xl p-5 group hover:border-[var(--border-accent)] transition-all animate-fade-in"
+            style={{ animationDelay: `${100 + i * 50}ms` }}
           >
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] group-hover:bg-[var(--accent-primary)]/20 transition-colors">
               <Icon className="h-5 w-5" />
             </span>
             <h4 className="mt-3 font-semibold text-[var(--text-primary)]">{area.title}</h4>
             <p className="mt-1 text-sm text-[var(--text-muted)]">{area.detail}</p>
-          </motion.div>
+          </div>
         );
       })}
     </div>
@@ -107,12 +101,10 @@ const ImpactSection = () => (
       {pillars.map((pillar, i) => {
         const Icon = pillar.icon;
         return (
-          <motion.div
+          <div
             key={pillar.title}
-            initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 + i * 0.1 }}
-            className="glass-card rounded-2xl p-5 flex gap-4 items-start"
+            className="glass-card rounded-2xl p-5 flex gap-4 items-start animate-fade-in"
+            style={{ animationDelay: `${150 + i * 50}ms` }}
           >
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-secondary)]/10 text-[var(--accent-secondary)]">
               <Icon className="h-6 w-6" />
@@ -121,7 +113,7 @@ const ImpactSection = () => (
               <h4 className="font-semibold text-[var(--text-primary)]">{pillar.title}</h4>
               <p className="mt-1 text-sm text-[var(--text-muted)] leading-relaxed">{pillar.description}</p>
             </div>
-          </motion.div>
+          </div>
         );
       })}
     </div>
@@ -132,12 +124,10 @@ const ImpactSection = () => (
 const WorkSection = () => (
   <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 no-scrollbar">
     {experienceHighlights.map((item, i) => (
-      <motion.div
+      <div
         key={item.title}
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: i * 0.1 }}
-        className="glass-card rounded-2xl p-6 group hover:border-[var(--border-accent)] transition-all"
+        className="glass-card rounded-2xl p-6 group hover:border-[var(--border-accent)] transition-all animate-fade-in"
+        style={{ animationDelay: `${i * 40}ms` }}
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
@@ -157,7 +147,7 @@ const WorkSection = () => (
             </p>
           </div>
         </div>
-      </motion.div>
+      </div>
     ))}
   </div>
 );
@@ -464,10 +454,7 @@ const Portfolio = () => {
       {/* 3D Background */}
       <Scene3D activeSection={activeIndex} />
 
-      {/* Floating Orbs */}
-      <div className="orb orb-1" />
-      <div className="orb orb-2" />
-      <div className="orb orb-3" />
+      {/* Floating Orbs removed - using Scene3D orbs only for performance */}
 
       {/* Main Container */}
       <div className="relative z-10 h-full w-full flex flex-col">
