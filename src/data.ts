@@ -183,17 +183,6 @@ export const projects = [
     ]
   },
   {
-    title: 'MQTT5 Bridge Server',
-    stack: 'C++, MQTT v5, Networking, IPC',
-    summary:
-      'Relay/bridge server connecting external networks to internal devices for secure IoT orchestration.',
-    highlights: [
-      'MQTT v5 protocol implementation for bidirectional messaging.',
-      'Secure bridge between private devices and external clients.',
-      'Network configuration and access control for IoT mesh.'
-    ]
-  },
-  {
     title: 'OpenGL Base',
     stack: 'C++, OpenGL, CMake, GLFW',
     summary:
@@ -202,6 +191,17 @@ export const projects = [
       'Modern OpenGL setup with shader pipeline.',
       'CMake build system for cross-platform compilation.',
       'Foundation for GPU profiling and rendering experiments.'
+    ]
+  },
+  {
+    title: 'MQTT5 Bridge Server',
+    stack: 'C++, MQTT v5, Networking, IPC',
+    summary:
+      'Relay/bridge server connecting external networks to internal devices for secure IoT orchestration.',
+    highlights: [
+      'MQTT v5 protocol implementation for bidirectional messaging.',
+      'Secure bridge between private devices and external clients.',
+      'Network configuration and access control for IoT mesh.'
     ]
   },
   {
@@ -217,13 +217,13 @@ export const projects = [
   },
   {
     title: 'DocEye Patient Health Monitor',
-    stack: 'Python, Flask, SQL, REST API, JavaScript',
+    stack: 'ML, OpenCV, Python, Flask, SQL',
     summary:
-      'Full-stack web app enabling doctors to remotely monitor patient health with real-time alerts.',
+      'Camera-based ML health monitoring system with real-time mobile alerts for doctors.',
     highlights: [
-      'Flask backend with RESTful API design.',
-      'SQL database for patient records and alert history.',
-      'Real-time notification system for out-of-range health metrics.'
+      'Real-time patient movement tracking using OpenCV and ML computer vision.',
+      'Automated alert system sending critical notifications directly to doctor mobile.',
+      'Flask backend with SQL database for comprehensive patient history.'
     ]
   }
 ];
