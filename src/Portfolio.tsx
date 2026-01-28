@@ -123,29 +123,23 @@ const ImpactSection = () => (
 );
 
 // Section: Work/Experience - Scrollable with expandable details and scroll passthrough
-const WorkSection = ({ onScrollEnd }: { onScrollEnd?: (direction: 'up' | 'down') => void }) => {
+const WorkSection = ({ isTransitioning }: { isTransitioning?: boolean }) => {
   const [expandedIdx, setExpandedIdx] = React.useState<number | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
-  const scrollEndTimeout = React.useRef<number | null>(null);
 
   const handleScroll = (e: React.WheelEvent) => {
     const el = scrollRef.current;
-    if (!el || !onScrollEnd) return;
+    if (!el) return;
 
     const { scrollTop, scrollHeight, clientHeight } = el;
     const isAtTop = scrollTop <= 0;
-    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 5;
+    const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
 
-    // If at bounds and scrolling in that direction, pass to parent
-    if (isAtTop && e.deltaY < -30) {
-      e.preventDefault();
-      if (scrollEndTimeout.current) clearTimeout(scrollEndTimeout.current);
-      scrollEndTimeout.current = window.setTimeout(() => onScrollEnd('up'), 50);
-    } else if (isAtBottom && e.deltaY > 30) {
-      e.preventDefault();
-      if (scrollEndTimeout.current) clearTimeout(scrollEndTimeout.current);
-      scrollEndTimeout.current = window.setTimeout(() => onScrollEnd('down'), 50);
+    // Stop event handling by parent unless we're at the bounds
+    if ((!isAtTop && e.deltaY < 0) || (!isAtBottom && e.deltaY > 0)) {
+      e.stopPropagation();
     }
+    // If at bounds, let it bubble to parent (Wrapper -> Root) for navigation
   };
 
   return (
@@ -171,7 +165,7 @@ const WorkSection = ({ onScrollEnd }: { onScrollEnd?: (direction: 'up' | 'down')
       <div
         ref={scrollRef}
         onWheel={handleScroll}
-        className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar"
+        className={`flex-1 pr-2 space-y-3 custom-scrollbar ${isTransitioning ? 'overflow-y-hidden' : 'overflow-y-auto'}`}
       >
         {experienceHighlights.map((item, i) => (
           <div
@@ -273,24 +267,24 @@ const ProjectsSection = () => {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
-                <h4 className="font-display text-lg font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                <h4 className="font-display text-xl font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
                   {project.title}
                 </h4>
-                <p className="mt-1 text-xs font-mono text-[var(--accent-secondary)]">
+                <p className="mt-1 text-sm font-mono text-[var(--accent-secondary)]">
                   {project.stack}
                 </p>
               </div>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-mono font-bold">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-sm font-mono font-bold">
                 {String(startIdx + i + 1).padStart(2, '0')}
               </span>
             </div>
-            <p className="mt-3 text-sm text-[var(--text-secondary)] leading-relaxed">
+            <p className="mt-3 text-base text-[var(--text-secondary)] leading-relaxed">
               {project.summary}
             </p>
-            <ul className="mt-3 space-y-1.5">
+            <ul className="mt-3 space-y-2">
               {project.highlights.map((highlight, j) => (
-                <li key={j} className="flex items-start gap-2 text-xs text-[var(--text-muted)]">
-                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shrink-0" />
+                <li key={j} className="flex items-start gap-2 text-sm text-[var(--text-muted)]">
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shrink-0" />
                   <span>{highlight}</span>
                 </li>
               ))}
@@ -518,17 +512,18 @@ const Portfolio = () => {
   const SectionIcon = sectionIcons[currentSection.id] || Sparkles;
   const SectionContent = sectionContent[currentSection.id] || ImpactSection;
 
-  // Handle wheel navigation
+  // Handle wheel navigation (Root Level)
   const handleWheel = useCallback(
-    (e: WheelEvent) => {
-      e.preventDefault();
+    (e: React.WheelEvent) => {
+      // Don't navigate if transitioning
+      if (isTransitioning) return;
 
       const now = Date.now();
       if (now - lastWheelTime.current < 800) return; // Debounce
-      if (isTransitioning) return;
 
       const delta = e.deltaY;
 
+      // Only navigate if the event bubbled up (meaning child didn't handle it)
       if (delta > 30) {
         // Scroll down = next section
         if (activeIndex < sections.length - 1) {
@@ -554,13 +549,13 @@ const Portfolio = () => {
       if (isTransitioning) return;
 
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-        e.preventDefault();
+        // e.preventDefault(); // Optional: allow default if needed, but nav usually prevents
         if (activeIndex < sections.length - 1) {
           setIsTransitioning(true);
           setActiveIndex((prev) => prev + 1);
         }
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-        e.preventDefault();
+        // e.preventDefault();
         if (activeIndex > 0) {
           setIsTransitioning(true);
           setActiveIndex((prev) => prev - 1);
@@ -570,16 +565,13 @@ const Portfolio = () => {
     [activeIndex, sections.length, isTransitioning]
   );
 
-  // Setup event listeners
+  // Setup keyboard listener (Window level is fine for keys)
   useEffect(() => {
-    window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('keydown', handleKeyDown);
-
     return () => {
-      window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleWheel, handleKeyDown]);
+  }, [handleKeyDown]);
 
   // Reset transition state
   useEffect(() => {
@@ -601,7 +593,10 @@ const Portfolio = () => {
   const progress = ((activeIndex + 1) / sections.length) * 100;
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-[var(--bg-primary)]">
+    <div
+      className="relative h-screen w-screen overflow-hidden bg-[var(--bg-primary)]"
+      onWheel={handleWheel}
+    >
       {/* 3D Background */}
       <Scene3D activeSection={activeIndex} />
 
@@ -614,9 +609,6 @@ const Portfolio = () => {
         <header className="shrink-0 px-6 lg:px-12 py-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 20 }}
               className="relative"
             >
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] opacity-60 blur" />
@@ -729,29 +721,27 @@ const Portfolio = () => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -60, scale: 0.95 }}
                   transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                  className="h-full overflow-y-auto no-scrollbar pb-8"
-                >
-                  {currentSection.id === 'work' ? (
-                    <WorkSection
-                      onScrollEnd={(direction) => {
-                        if (isTransitioning) return;
-                        const now = Date.now();
-                        if (now - lastWheelTime.current < 800) return;
+                  className={`h-full no-scrollbar pb-8 ${isTransitioning ? 'overflow-hidden' : 'overflow-y-auto'}`}
+                  onWheel={(e) => {
+                    // Check if content overflows and handle nested scrolling
+                    const el = e.currentTarget;
+                    const { scrollTop, scrollHeight, clientHeight } = el;
 
-                        if (direction === 'down' && activeIndex < sections.length - 1) {
-                          lastWheelTime.current = now;
-                          setIsTransitioning(true);
-                          setActiveIndex((prev) => prev + 1);
-                        } else if (direction === 'up' && activeIndex > 0) {
-                          lastWheelTime.current = now;
-                          setIsTransitioning(true);
-                          setActiveIndex((prev) => prev - 1);
-                        }
-                      }}
-                    />
-                  ) : (
-                    <SectionContent />
-                  )}
+                    // If content fits (no scrollbar), allow bubble immediately to handle navigation
+                    if (scrollHeight <= clientHeight) return;
+
+                    const isAtTop = scrollTop <= 0;
+                    const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
+
+                    // If we can scroll in the requested direction, stop propagation (consume event)
+                    // If we are at bounds, allow bubbling (parent handles navigation)
+                    if ((!isAtTop && e.deltaY < 0) || (!isAtBottom && e.deltaY > 0)) {
+                      e.stopPropagation();
+                    }
+                  }}
+                >
+                  {/* @ts-ignore - Dynamic component props */}
+                  <SectionContent isTransitioning={isTransitioning} />
                 </motion.div>
               </AnimatePresence>
             </div>
