@@ -10,14 +10,14 @@ module.exports = {
       },
       colors: {
         bg: {
-          primary: '#0a0a0f',
-          secondary: '#12121a',
-          tertiary: '#1a1a24'
+          primary: 'var(--bg-primary)',
+          secondary: 'var(--bg-secondary)',
+          tertiary: 'var(--bg-tertiary)'
         },
         accent: {
-          primary: '#ff6b35',
-          secondary: '#00d4aa',
-          tertiary: '#6366f1'
+          primary: 'var(--accent-primary)',
+          secondary: 'var(--accent-secondary)',
+          tertiary: 'var(--accent-tertiary)'
         }
       },
       animation: {

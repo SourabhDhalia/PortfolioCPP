@@ -21,7 +21,9 @@ import {
   Briefcase,
   Network,
   Gauge,
-  ShieldCheck
+  ShieldCheck,
+  Sun,
+  Moon
 } from 'lucide-react';
 import {
   profile,
@@ -504,6 +506,27 @@ const sectionContent: Record<string, React.FC> = {
 const Portfolio = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [theme, setTheme] = useState('dark');
+
+  // Initialize theme
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+    if (savedTheme === 'light') {
+      document.documentElement.classList.add('light');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    if (newTheme === 'light') {
+      document.documentElement.classList.add('light');
+    } else {
+      document.documentElement.classList.remove('light');
+    }
+  };
   const wheelTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastWheelTime = useRef(0);
 
@@ -631,6 +654,17 @@ const Portfolio = () => {
 
           {/* Header Actions */}
           <div className="flex items-center gap-3">
+            <button
+              onClick={toggleTheme}
+              className="btn-ghost flex items-center justify-center p-2 rounded-full"
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5 text-[var(--accent-primary)]" />
+              ) : (
+                <Moon className="h-5 w-5 text-[var(--accent-tertiary)]" />
+              )}
+            </button>
             <a
               href={links.github}
               target="_blank"

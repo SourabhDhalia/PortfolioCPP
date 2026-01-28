@@ -59,6 +59,40 @@
 }
 
 /* ================================================================
+   LIGHT THEME OVERRIDES
+   ================================================================ */
+html.light {
+  /* Colors - Clean White/Gray Palette */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  /* slate-50 */
+  --bg-tertiary: #f1f5f9;
+  /* slate-100 */
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --bg-glass-strong: rgba(255, 255, 255, 0.95);
+
+  /* Text - High Contrast */
+  --text-primary: #020617;
+  /* slate-950 */
+  --text-secondary: #334155;
+  /* slate-700 */
+  --text-muted: #64748b;
+  /* slate-500 */
+
+  /* Borders - Darker for visibility on white */
+  --border-subtle: rgba(15, 23, 42, 0.06);
+  --border-medium: rgba(15, 23, 42, 0.12);
+  --border-strong: rgba(15, 23, 42, 0.2);
+  --border-accent: rgba(255, 107, 53, 0.5);
+
+  /* Shadows - Softer but distinct */
+  --shadow-soft: 0 4px 20px rgba(15, 23, 42, 0.03);
+  --shadow-medium: 0 8px 30px rgba(15, 23, 42, 0.08);
+  --shadow-glow-accent: 0 0 40px rgba(255, 107, 53, 0.15);
+  --shadow-glow-secondary: 0 0 40px rgba(0, 212, 170, 0.15);
+}
+
+/* ================================================================
    BASE STYLES
    ================================================================ */
 *,
@@ -806,64 +840,66 @@ body {
   .glass-strong {
     display: none !important;
   }
-}@layer utilities {
-    .animate-float-slow {
-        animation: float-slow 25s infinite linear;
-    }
+}
 
-    .animate-float-slower {
-        animation: float-slower 30s infinite linear;
-    }
+@layer utilities {
+  .animate-float-slow {
+    animation: float-slow 25s infinite linear;
+  }
 
-    .animate-float-slowest {
-        animation: float-slowest 35s infinite linear;
-    }
+  .animate-float-slower {
+    animation: float-slower 30s infinite linear;
+  }
+
+  .animate-float-slowest {
+    animation: float-slowest 35s infinite linear;
+  }
 }
 
 @keyframes float-slow {
 
-    0%,
-    100% {
-        transform: translate(0, 0);
-    }
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
 
-    25% {
-        transform: translate(5%, 5%);
-    }
+  25% {
+    transform: translate(5%, 5%);
+  }
 
-    50% {
-        transform: translate(0, 10%);
-    }
+  50% {
+    transform: translate(0, 10%);
+  }
 
-    75% {
-        transform: translate(-5%, 5%);
-    }
+  75% {
+    transform: translate(-5%, 5%);
+  }
 }
 
 @keyframes float-slower {
 
-    0%,
-    100% {
-        transform: translate(0, 0);
-    }
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
 
-    33% {
-        transform: translate(8%, -5%);
-    }
+  33% {
+    transform: translate(8%, -5%);
+  }
 
-    66% {
-        transform: translate(-4%, 5%);
-    }
+  66% {
+    transform: translate(-4%, 5%);
+  }
 }
 
 @keyframes float-slowest {
 
-    0%,
-    100% {
-        transform: translate(0, 0);
-    }
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
 
-    50% {
-        transform: translate(-10%, 10%);
-    }
+  50% {
+    transform: translate(-10%, 10%);
+  }
 }

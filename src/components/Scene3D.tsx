@@ -8,7 +8,7 @@ import React, { Suspense, lazy, useState, useEffect } from 'react';
 const SimpleBackground = () => (
     <div className="fixed inset-0 z-0 overflow-hidden">
         {/* Base gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0f] via-[#12121a] to-[#0a0a0f]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-secondary)] to-[var(--bg-primary)] transition-colors duration-500" />
 
         {/* Animated orbs - optimized with will-change and reduced blur */}
         {/* Animated orbs - optimized with CSS animations, reduced flicker */}
