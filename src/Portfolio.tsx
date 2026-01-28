@@ -152,37 +152,32 @@ const WorkSection = () => (
   </div>
 );
 
-// Section: Projects
+// Section: Projects - Compact 2-column grid
 const ProjectsSection = () => (
-  <div className="space-y-6">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2 no-scrollbar">
     {projects.map((project, i) => (
-      <motion.div
+      <div
         key={project.title}
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: i * 0.15 }}
-        className="glass-card rounded-2xl p-6 hover:border-[var(--border-accent)] transition-all"
+        className="glass-card rounded-xl p-4 hover:border-[var(--border-accent)] transition-all group animate-fade-in"
+        style={{ animationDelay: `${i * 40}ms` }}
       >
-        <div className="flex flex-col lg:flex-row lg:items-start gap-4">
-          <div className="flex-1">
-            <h4 className="font-display text-xl font-semibold text-[var(--text-primary)]">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <h4 className="font-display text-base font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors truncate">
               {project.title}
             </h4>
-            <p className="mt-1 text-sm font-mono text-[var(--accent-secondary)]">{project.stack}</p>
-            <p className="mt-3 text-sm text-[var(--text-secondary)] leading-relaxed">
-              {project.summary}
+            <p className="mt-0.5 text-xs font-mono text-[var(--accent-secondary)] truncate">
+              {project.stack}
             </p>
-            <ul className="mt-4 space-y-2">
-              {project.highlights.map((highlight, j) => (
-                <li key={j} className="flex items-start gap-3 text-sm text-[var(--text-muted)]">
-                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shrink-0" />
-                  <span>{highlight}</span>
-                </li>
-              ))}
-            </ul>
           </div>
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-mono">
+            {String(i + 1).padStart(2, '0')}
+          </span>
         </div>
-      </motion.div>
+        <p className="mt-2 text-xs text-[var(--text-muted)] leading-relaxed line-clamp-2">
+          {project.summary}
+        </p>
+      </div>
     ))}
   </div>
 );
