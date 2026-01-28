@@ -1,5 +1,5 @@
-import Resume from './Resume';
+import Portfolio from './Portfolio';
 
-const App = () => <Resume />;
+const App = () => <Portfolio />;
 
 export default App;

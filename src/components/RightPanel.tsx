@@ -12,10 +12,7 @@ interface RightPanelProps {
 const RightPanel = ({ scrollRef, activeSection, scrollProgress }: RightPanelProps) => {
   const blur = 18 + scrollProgress * 0.1;
   return (
-    <div
-      ref={scrollRef}
-      className="scrollbar space-y-6 lg:h-[72vh] lg:overflow-y-auto lg:pr-2 lg:snap-y lg:snap-mandatory pb-32"
-    >
+    <div className="space-y-6 lg:pr-2">
       {chapterItems.map((chapter, index) => {
         const Icon = chapter.icon;
         const isActive = chapter.id === activeSection;
@@ -28,12 +25,12 @@ const RightPanel = ({ scrollRef, activeSection, scrollProgress }: RightPanelProp
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
             viewport={{ once: false, margin: "-20% 0px -20% 0px" }}
-            className="snap-start scroll-mt-24"
+            className="min-h-[60vh] flex flex-col justify-center scroll-mt-24"
           >
             <div
-              className={`glass-panel min-h-[40vh] rounded-3xl p-6 transition-all duration-500 border-2 ${isActive
-                  ? 'border-[var(--accent-soft)] bg-white/80 shadow-lg shadow-orange-500/5'
-                  : 'border-transparent bg-white/40 grayscale-[0.5] hover:grayscale-0'
+              className={`glass-panel rounded-3xl p-8 transition-all duration-500 border-2 ${isActive
+                  ? 'border-[var(--accent-soft)] bg-white/70 shadow-lg shadow-orange-500/10 scale-[1.02]'
+                  : 'border-transparent bg-white/30 hover:bg-white/50'
                 }`}
               style={{
                 backdropFilter: `blur(${blur}px) saturate(1.3)`,
@@ -66,7 +63,7 @@ const RightPanel = ({ scrollRef, activeSection, scrollProgress }: RightPanelProp
                 {chapter.chips.map((chip) => (
                   <span
                     key={chip}
-                    className="rounded-full border border-[var(--stroke)] bg-white/50 px-3 py-1 text-xs font-mono text-[color:var(--accent-3)]"
+                    className="rounded-full border border-[var(--stroke)] bg-white/50 px-3 py-1 text-xs font-mono text-[color:var(--accent-3)] opacity-80"
                   >
                     {chip}
                   </span>
@@ -76,8 +73,6 @@ const RightPanel = ({ scrollRef, activeSection, scrollProgress }: RightPanelProp
           </motion.section>
         );
       })}
-
-      <div className="h-24"></div> {/* Spacer for bottom scroll */}
     </div>
   );
 };
