@@ -9,6 +9,8 @@ import {
   Youtube,
   ChevronUp,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   Sparkles,
   Terminal,
@@ -120,75 +122,221 @@ const ImpactSection = () => (
   </div>
 );
 
-// Section: Work/Experience
-const WorkSection = () => (
-  <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 no-scrollbar">
-    {experienceHighlights.map((item, i) => (
-      <div
-        key={item.title}
-        className="glass-card rounded-2xl p-6 group hover:border-[var(--border-accent)] transition-all animate-fade-in"
-        style={{ animationDelay: `${i * 40}ms` }}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-mono text-[var(--accent-primary)]">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <h4 className="font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                {item.title}
-              </h4>
-            </div>
-            <p className="mt-2 text-sm text-[var(--text-secondary)] leading-relaxed">
-              {item.summary}
-            </p>
-            <p className="mt-3 text-xs text-[var(--text-muted)] leading-relaxed">
-              {item.detail}
-            </p>
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-);
+// Section: Work/Experience - Scrollable with expandable details and scroll passthrough
+const WorkSection = ({ onScrollEnd }: { onScrollEnd?: (direction: 'up' | 'down') => void }) => {
+  const [expandedIdx, setExpandedIdx] = React.useState<number | null>(null);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const scrollEndTimeout = React.useRef<number | null>(null);
 
-// Section: Projects - Readable 2-column grid
-const ProjectsSection = () => (
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 overflow-y-auto pr-2 no-scrollbar pb-4" style={{ maxHeight: 'calc(100vh - 280px)' }}>
-    {projects.map((project, i) => (
-      <div
-        key={project.title}
-        className="glass-card rounded-2xl p-5 hover:border-[var(--border-accent)] transition-all group animate-fade-in"
-        style={{ animationDelay: `${i * 30}ms` }}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <h4 className="font-display text-lg font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-              {project.title}
-            </h4>
-            <p className="mt-1 text-xs font-mono text-[var(--accent-secondary)]">
-              {project.stack}
+  const handleScroll = (e: React.WheelEvent) => {
+    const el = scrollRef.current;
+    if (!el || !onScrollEnd) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    const isAtTop = scrollTop <= 0;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 5;
+
+    // If at bounds and scrolling in that direction, pass to parent
+    if (isAtTop && e.deltaY < -30) {
+      e.preventDefault();
+      if (scrollEndTimeout.current) clearTimeout(scrollEndTimeout.current);
+      scrollEndTimeout.current = window.setTimeout(() => onScrollEnd('up'), 50);
+    } else if (isAtBottom && e.deltaY > 30) {
+      e.preventDefault();
+      if (scrollEndTimeout.current) clearTimeout(scrollEndTimeout.current);
+      scrollEndTimeout.current = window.setTimeout(() => onScrollEnd('down'), 50);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Company Header */}
+      <div className="glass-card rounded-2xl p-5 border-[var(--border-accent)] mb-4 shrink-0">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h3 className="font-display text-xl font-bold text-[var(--text-primary)]">
+              Samsung R&D Institute
+            </h3>
+            <p className="text-sm text-[var(--accent-secondary)] font-mono mt-1">
+              System Software Engineer • Delhi, India
             </p>
           </div>
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-mono font-bold">
-            {String(i + 1).padStart(2, '0')}
+          <span className="text-xs font-mono text-[var(--text-muted)] bg-[var(--bg-tertiary)] px-3 py-1.5 rounded-full">
+            2024 – Present
           </span>
         </div>
-        <p className="mt-3 text-sm text-[var(--text-secondary)] leading-relaxed">
-          {project.summary}
-        </p>
-        <ul className="mt-3 space-y-1.5">
-          {project.highlights.map((highlight, j) => (
-            <li key={j} className="flex items-start gap-2 text-xs text-[var(--text-muted)]">
-              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shrink-0" />
-              <span>{highlight}</span>
-            </li>
-          ))}
-        </ul>
       </div>
-    ))}
-  </div>
-);
+
+      {/* Scrollable Experience Items with passthrough */}
+      <div
+        ref={scrollRef}
+        onWheel={handleScroll}
+        className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar"
+      >
+        {experienceHighlights.map((item, i) => (
+          <div
+            key={item.title}
+            onClick={() => setExpandedIdx(expandedIdx === i ? null : i)}
+            className={`glass-card rounded-xl p-4 group cursor-pointer transition-all animate-fade-in ${expandedIdx === i ? 'border-[var(--border-accent)] bg-[var(--bg-tertiary)]' : 'hover:border-[var(--border-accent)]'}`}
+            style={{ animationDelay: `${i * 30}ms` }}
+          >
+            <div className="flex items-start gap-3">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-mono font-bold mt-0.5">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h4 className={`font-semibold text-base transition-colors ${expandedIdx === i ? 'text-[var(--accent-primary)]' : 'text-[var(--text-primary)] group-hover:text-[var(--accent-primary)]'}`}>
+                    {item.title}
+                  </h4>
+                  <ChevronDown className={`w-5 h-5 text-[var(--text-muted)] transition-transform ${expandedIdx === i ? 'rotate-180' : ''}`} />
+                </div>
+                <p className="mt-1 text-sm text-[var(--text-secondary)] leading-relaxed">
+                  {item.summary}
+                </p>
+                {expandedIdx === i && (
+                  <p className="mt-3 text-sm text-[var(--text-muted)] leading-relaxed border-t border-[var(--border-subtle)] pt-3 animate-fade-in">
+                    {item.detail}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Hint */}
+      <div className="text-center text-xs text-[var(--text-muted)] mt-3 opacity-70">
+        ↕ Scroll to see all • Click to expand
+      </div>
+    </div>
+  );
+};
+
+// Section: Projects - Paginated view with swipe gestures
+const ProjectsSection = () => {
+  const [page, setPage] = React.useState(0);
+  const touchStartX = React.useRef(0);
+  const touchEndX = React.useRef(0);
+  const projectsPerPage = 4;
+  const totalPages = Math.ceil(projects.length / projectsPerPage);
+  const startIdx = page * projectsPerPage;
+  const visibleProjects = projects.slice(startIdx, startIdx + projectsPerPage);
+
+  // Swipe gesture handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX.current;
+    const threshold = 50; // minimum swipe distance
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0 && page < totalPages - 1) {
+        // Swipe left -> next page
+        setPage(page + 1);
+      } else if (diff < 0 && page > 0) {
+        // Swipe right -> prev page
+        setPage(page - 1);
+      }
+    }
+  };
+
+  // Mouse wheel horizontal scroll (for trackpad)
+  const handleWheel = (e: React.WheelEvent) => {
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 30) {
+      e.preventDefault();
+      if (e.deltaX > 0 && page < totalPages - 1) {
+        setPage(page + 1);
+      } else if (e.deltaX < 0 && page > 0) {
+        setPage(page - 1);
+      }
+    }
+  };
+
+  return (
+    <div
+      className="flex flex-col h-full"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onWheel={handleWheel}
+    >
+      {/* Projects Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1">
+        {visibleProjects.map((project, i) => (
+          <div
+            key={project.title}
+            className="glass-card rounded-2xl p-5 hover:border-[var(--border-accent)] transition-all group animate-fade-in"
+            style={{ animationDelay: `${i * 50}ms` }}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1">
+                <h4 className="font-display text-lg font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                  {project.title}
+                </h4>
+                <p className="mt-1 text-xs font-mono text-[var(--accent-secondary)]">
+                  {project.stack}
+                </p>
+              </div>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-mono font-bold">
+                {String(startIdx + i + 1).padStart(2, '0')}
+              </span>
+            </div>
+            <p className="mt-3 text-sm text-[var(--text-secondary)] leading-relaxed">
+              {project.summary}
+            </p>
+            <ul className="mt-3 space-y-1.5">
+              {project.highlights.map((highlight, j) => (
+                <li key={j} className="flex items-start gap-2 text-xs text-[var(--text-muted)]">
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shrink-0" />
+                  <span>{highlight}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-center gap-4 mt-6 pt-4 border-t border-[var(--border-subtle)]">
+        <button
+          onClick={() => setPage(Math.max(0, page - 1))}
+          disabled={page === 0}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-subtle)] text-sm font-medium disabled:opacity-30 disabled:cursor-not-allowed hover:border-[var(--border-medium)] transition-all"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Prev
+        </button>
+
+        <div className="flex items-center gap-2">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i)}
+              className={`w-2.5 h-2.5 rounded-full transition-all ${page === i ? 'bg-[var(--accent-primary)] scale-125' : 'bg-[var(--border-medium)] hover:bg-[var(--text-muted)]'}`}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+          disabled={page === totalPages - 1}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-subtle)] text-sm font-medium disabled:opacity-30 disabled:cursor-not-allowed hover:border-[var(--border-medium)] transition-all"
+        >
+          Next
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Swipe hint */}
+      <p className="text-center text-[10px] text-[var(--text-muted)] mt-2 opacity-60">
+        ← Swipe or use arrows to navigate →
+      </p>
+    </div>
+  );
+};
 
 // Section: Skills/Toolbox
 const SkillsSection = () => (
@@ -583,7 +731,27 @@ const Portfolio = () => {
                   transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
                   className="h-full overflow-y-auto no-scrollbar pb-8"
                 >
-                  <SectionContent />
+                  {currentSection.id === 'work' ? (
+                    <WorkSection
+                      onScrollEnd={(direction) => {
+                        if (isTransitioning) return;
+                        const now = Date.now();
+                        if (now - lastWheelTime.current < 800) return;
+
+                        if (direction === 'down' && activeIndex < sections.length - 1) {
+                          lastWheelTime.current = now;
+                          setIsTransitioning(true);
+                          setActiveIndex((prev) => prev + 1);
+                        } else if (direction === 'up' && activeIndex > 0) {
+                          lastWheelTime.current = now;
+                          setIsTransitioning(true);
+                          setActiveIndex((prev) => prev - 1);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <SectionContent />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>

@@ -739,6 +739,25 @@ body {
   background: var(--border-strong);
 }
 
+/* Custom visible scrollbar for nested scroll */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 100px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 100px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
 /* ================================================================
    RESPONSIVE UTILITIES
    ================================================================ */
