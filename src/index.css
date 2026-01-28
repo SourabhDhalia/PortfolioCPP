@@ -806,4 +806,64 @@ body {
   .glass-strong {
     display: none !important;
   }
+}@layer utilities {
+    .animate-float-slow {
+        animation: float-slow 25s infinite linear;
+    }
+
+    .animate-float-slower {
+        animation: float-slower 30s infinite linear;
+    }
+
+    .animate-float-slowest {
+        animation: float-slowest 35s infinite linear;
+    }
+}
+
+@keyframes float-slow {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(5%, 5%);
+    }
+
+    50% {
+        transform: translate(0, 10%);
+    }
+
+    75% {
+        transform: translate(-5%, 5%);
+    }
+}
+
+@keyframes float-slower {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    33% {
+        transform: translate(8%, -5%);
+    }
+
+    66% {
+        transform: translate(-4%, 5%);
+    }
+}
+
+@keyframes float-slowest {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(-10%, 10%);
+    }
 }
