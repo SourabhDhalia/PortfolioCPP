@@ -238,10 +238,10 @@ const ProjectsSection = () => {
     }
   };
 
-  // Mouse wheel horizontal scroll (for trackpad)
+  /* Mouse wheel horizontal scroll (for trackpad) */
   const handleWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 30) {
-      e.preventDefault();
+      // e.preventDefault(); // Removed to fix passive listener error
       if (e.deltaX > 0 && page < totalPages - 1) {
         setPage(page + 1);
       } else if (e.deltaX < 0 && page > 0) {
@@ -252,7 +252,7 @@ const ProjectsSection = () => {
 
   return (
     <div
-      className="flex flex-col h-full"
+      className="flex flex-col h-full overscroll-x-contain"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onWheel={handleWheel}
