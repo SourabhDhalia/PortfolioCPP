@@ -152,21 +152,21 @@ const WorkSection = () => (
   </div>
 );
 
-// Section: Projects - Compact 2-column grid
+// Section: Projects - 2-column grid with full details
 const ProjectsSection = () => (
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 max-h-[55vh] overflow-y-auto pr-2 no-scrollbar">
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2 no-scrollbar">
     {projects.map((project, i) => (
       <div
         key={project.title}
-        className="glass-card rounded-xl p-3 hover:border-[var(--border-accent)] transition-all group animate-fade-in"
+        className="glass-card rounded-xl p-4 hover:border-[var(--border-accent)] transition-all group animate-fade-in"
         style={{ animationDelay: `${i * 30}ms` }}
       >
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h4 className="font-display text-sm font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors truncate">
+            <h4 className="font-display text-base font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
               {project.title}
             </h4>
-            <p className="mt-0.5 text-[10px] font-mono text-[var(--accent-secondary)] truncate">
+            <p className="mt-0.5 text-[10px] font-mono text-[var(--accent-secondary)]">
               {project.stack}
             </p>
           </div>
@@ -174,6 +174,17 @@ const ProjectsSection = () => (
             {String(i + 1).padStart(2, '0')}
           </span>
         </div>
+        <p className="mt-2 text-xs text-[var(--text-secondary)] leading-relaxed">
+          {project.summary}
+        </p>
+        <ul className="mt-2 space-y-1">
+          {project.highlights.map((highlight, j) => (
+            <li key={j} className="flex items-start gap-2 text-[10px] text-[var(--text-muted)]">
+              <span className="mt-1 h-1 w-1 rounded-full bg-[var(--accent-primary)] shrink-0" />
+              <span className="line-clamp-1">{highlight}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     ))}
   </div>
