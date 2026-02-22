@@ -25,6 +25,27 @@ const WorkSection = ({ isTransitioning, workExpandedRef }: SectionProps) => {
         }
     };
 
+    const touchStartY = React.useRef(0);
+    const handleTouchStart = (e: React.TouchEvent) => {
+        touchStartY.current = e.touches[0].clientY;
+    };
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        const el = scrollRef.current;
+        if (!el) return;
+
+        const endY = e.changedTouches[0].clientY;
+        const diffY = touchStartY.current - endY;
+
+        const { scrollTop, scrollHeight, clientHeight } = el;
+        const isAtTop = scrollTop <= 1;
+        const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 2;
+
+        // If swiping up (diffY > 0) and not at bottom, or swiping down (diffY < 0) and not at top -> consume event
+        if ((!isAtBottom && diffY > 0) || (!isAtTop && diffY < 0)) {
+            e.stopPropagation();
+        }
+    };
+
     const toggleItem = (i: number) => setExpandedIdx(expandedIdx === i ? null : i);
 
     return (
@@ -50,6 +71,8 @@ const WorkSection = ({ isTransitioning, workExpandedRef }: SectionProps) => {
             <div
                 ref={scrollRef}
                 onWheel={handleScroll}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
                 className={`flex-1 pr-2 space-y-3 custom-scrollbar ${isTransitioning ? 'overflow-y-hidden' : 'overflow-y-auto'}`}
             >
                 {experienceHighlights.map((item, i) => (
