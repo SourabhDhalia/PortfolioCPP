@@ -1,48 +1,33 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowUpRight,
   Github,
   Linkedin,
   Mail,
-  MapPin,
-  Youtube,
   ChevronUp,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ExternalLink,
   Sparkles,
-  Terminal,
   Cpu,
   Code,
-  Zap,
   Award,
   Briefcase,
-  Network,
-  Gauge,
-  ShieldCheck,
   Sun,
   Moon
 } from 'lucide-react';
-import {
-  profile,
-  links,
-  stats,
-  focusAreas,
-  principles,
-  pillars,
-  experienceHighlights,
-  projects,
-  skills,
-  awards,
-  education,
-  chapterItems
-} from './data';
+import { profile, links, chapterItems } from './data';
 import Scene3D from './components/Scene3D';
+import type { SectionProps } from './types';
+import {
+  ImpactSection,
+  WorkSection,
+  ProjectsSection,
+  SkillsSection,
+  RecognitionSection,
+  ContactSection
+} from './components/sections';
 
 /* ================================================================
-   SECTION CONFIGURATIONS
+   SECTION CONFIGURATION
    ================================================================ */
 const sectionIcons: Record<string, React.ElementType> = {
   impact: Sparkles,
@@ -53,445 +38,7 @@ const sectionIcons: Record<string, React.ElementType> = {
   contact: Mail
 };
 
-/* ================================================================
-   SECTION CONTENT COMPONENTS
-   ================================================================ */
-
-// Section: Impact/Capability
-const ImpactSection = () => (
-  <div className="space-y-8">
-    {/* Stats Grid */}
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat, i) => (
-        <div
-          key={stat.label}
-          className="stat-card animate-fade-in"
-          style={{ animationDelay: `${i * 50}ms` }}
-        >
-          <p className="stat-value">{stat.value}</p>
-          <p className="stat-label">{stat.label}</p>
-          <div className="meter mt-3">
-            <div
-              className="meter-fill animate-meter"
-              style={{ '--meter-width': `${stat.meter}%`, animationDelay: `${200 + i * 50}ms` } as React.CSSProperties}
-            />
-          </div>
-        </div>
-      ))}
-    </div>
-
-    {/* Focus Areas */}
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {focusAreas.map((area, i) => {
-        const Icon = area.icon;
-        return (
-          <div
-            key={area.title}
-            className="glass-card rounded-2xl p-5 group hover:border-[var(--border-accent)] transition-all animate-fade-in"
-            style={{ animationDelay: `${100 + i * 50}ms` }}
-          >
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] group-hover:bg-[var(--accent-primary)]/20 transition-colors">
-              <Icon className="h-5 w-5" />
-            </span>
-            <h4 className="mt-3 font-semibold text-[var(--text-primary)]">{area.title}</h4>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">{area.detail}</p>
-          </div>
-        );
-      })}
-    </div>
-
-    {/* Core Pillars */}
-    <div className="grid lg:grid-cols-2 gap-4">
-      {pillars.map((pillar, i) => {
-        const Icon = pillar.icon;
-        return (
-          <div
-            key={pillar.title}
-            className="glass-card rounded-2xl p-5 flex gap-4 items-start animate-fade-in"
-            style={{ animationDelay: `${150 + i * 50}ms` }}
-          >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-secondary)]/10 text-[var(--accent-secondary)]">
-              <Icon className="h-6 w-6" />
-            </span>
-            <div>
-              <h4 className="font-semibold text-[var(--text-primary)]">{pillar.title}</h4>
-              <p className="mt-1 text-sm text-[var(--text-muted)] leading-relaxed">{pillar.description}</p>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </div>
-);
-
-// Section: Work/Experience - Scrollable with expandable details and scroll passthrough
-const WorkSection = ({ isTransitioning }: { isTransitioning?: boolean }) => {
-  const [expandedIdx, setExpandedIdx] = React.useState<number | null>(null);
-  const scrollRef = React.useRef<HTMLDivElement>(null);
-
-  const handleScroll = (e: React.WheelEvent) => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    const { scrollTop, scrollHeight, clientHeight } = el;
-    const isAtTop = scrollTop <= 0;
-    const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
-
-    // Stop event handling by parent unless we're at the bounds
-    if ((!isAtTop && e.deltaY < 0) || (!isAtBottom && e.deltaY > 0)) {
-      e.stopPropagation();
-    }
-    // If at bounds, let it bubble to parent (Wrapper -> Root) for navigation
-  };
-
-  return (
-    <div className="flex flex-col h-full">
-      {/* Company Header */}
-      <div className="glass-card rounded-2xl p-5 border-[var(--border-accent)] mb-4 shrink-0">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h3 className="font-display text-xl font-bold text-[var(--text-primary)]">
-              Samsung R&D Institute
-            </h3>
-            <p className="text-sm text-[var(--accent-secondary)] font-mono mt-1">
-              System Software Engineer • Delhi, India
-            </p>
-          </div>
-          <span className="text-xs font-mono text-[var(--text-muted)] bg-[var(--bg-tertiary)] px-3 py-1.5 rounded-full">
-            2024 – Present
-          </span>
-        </div>
-      </div>
-
-      {/* Scrollable Experience Items with passthrough */}
-      <div
-        ref={scrollRef}
-        onWheel={handleScroll}
-        className={`flex-1 pr-2 space-y-3 custom-scrollbar ${isTransitioning ? 'overflow-y-hidden' : 'overflow-y-auto'}`}
-      >
-        {experienceHighlights.map((item, i) => (
-          <div
-            key={item.title}
-            onClick={() => setExpandedIdx(expandedIdx === i ? null : i)}
-            className={`glass-card rounded-xl p-4 group cursor-pointer transition-all animate-fade-in ${expandedIdx === i ? 'border-[var(--border-accent)] bg-[var(--bg-tertiary)]' : 'hover:border-[var(--border-accent)]'}`}
-            style={{ animationDelay: `${i * 30}ms` }}
-          >
-            <div className="flex items-start gap-3">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-xs font-mono font-bold mt-0.5">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <h4 className={`font-semibold text-base transition-colors ${expandedIdx === i ? 'text-[var(--accent-primary)]' : 'text-[var(--text-primary)] group-hover:text-[var(--accent-primary)]'}`}>
-                    {item.title}
-                  </h4>
-                  <ChevronDown className={`w-5 h-5 text-[var(--text-muted)] transition-transform ${expandedIdx === i ? 'rotate-180' : ''}`} />
-                </div>
-                <p className="mt-1 text-sm text-[var(--text-secondary)] leading-relaxed">
-                  {item.summary}
-                </p>
-                {expandedIdx === i && (
-                  <p className="mt-3 text-sm text-[var(--text-muted)] leading-relaxed border-t border-[var(--border-subtle)] pt-3 animate-fade-in">
-                    {item.detail}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Hint */}
-      <div className="text-center text-xs text-[var(--text-muted)] mt-3 opacity-70">
-        ↕ Scroll to see all • Click to expand
-      </div>
-    </div>
-  );
-};
-
-// Section: Projects - Paginated view with swipe gestures
-const ProjectsSection = () => {
-  const [page, setPage] = React.useState(0);
-  const touchStartX = React.useRef(0);
-  const touchEndX = React.useRef(0);
-  const projectsPerPage = 4;
-  const totalPages = Math.ceil(projects.length / projectsPerPage);
-  const startIdx = page * projectsPerPage;
-  const visibleProjects = projects.slice(startIdx, startIdx + projectsPerPage);
-
-  // Swipe gesture handlers
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    touchEndX.current = e.changedTouches[0].clientX;
-    const diff = touchStartX.current - touchEndX.current;
-    const threshold = 50; // minimum swipe distance
-
-    if (Math.abs(diff) > threshold) {
-      if (diff > 0 && page < totalPages - 1) {
-        // Swipe left -> next page
-        setPage(page + 1);
-      } else if (diff < 0 && page > 0) {
-        // Swipe right -> prev page
-        setPage(page - 1);
-      }
-    }
-  };
-
-  /* Mouse wheel horizontal scroll (for trackpad) */
-  const handleWheel = (e: React.WheelEvent) => {
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 30) {
-      // e.preventDefault(); // Removed to fix passive listener error
-      if (e.deltaX > 0 && page < totalPages - 1) {
-        setPage(page + 1);
-      } else if (e.deltaX < 0 && page > 0) {
-        setPage(page - 1);
-      }
-    }
-  };
-
-  return (
-    <div
-      className="flex flex-col h-full overscroll-x-contain"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onWheel={handleWheel}
-    >
-      {/* Projects Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1">
-        {visibleProjects.map((project, i) => (
-          <div
-            key={project.title}
-            className="glass-card rounded-2xl p-5 hover:border-[var(--border-accent)] transition-all group animate-fade-in"
-            style={{ animationDelay: `${i * 50}ms` }}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1">
-                <h4 className="font-display text-xl font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                  {project.title}
-                </h4>
-                <p className="mt-1 text-sm font-mono text-[var(--accent-secondary)]">
-                  {project.stack}
-                </p>
-              </div>
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] text-sm font-mono font-bold">
-                {String(startIdx + i + 1).padStart(2, '0')}
-              </span>
-            </div>
-            <p className="mt-3 text-base text-[var(--text-secondary)] leading-relaxed">
-              {project.summary}
-            </p>
-            <ul className="mt-3 space-y-2">
-              {project.highlights.map((highlight, j) => (
-                <li key={j} className="flex items-start gap-2 text-sm text-[var(--text-muted)]">
-                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] shrink-0" />
-                  <span>{highlight}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-center gap-4 mt-6 pt-4 border-t border-[var(--border-subtle)]">
-        <button
-          onClick={() => setPage(Math.max(0, page - 1))}
-          disabled={page === 0}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-subtle)] text-sm font-medium disabled:opacity-30 disabled:cursor-not-allowed hover:border-[var(--border-medium)] transition-all"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Prev
-        </button>
-
-        <div className="flex items-center gap-2">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setPage(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${page === i ? 'bg-[var(--accent-primary)] scale-125' : 'bg-[var(--border-medium)] hover:bg-[var(--text-muted)]'}`}
-            />
-          ))}
-        </div>
-
-        <button
-          onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
-          disabled={page === totalPages - 1}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--bg-glass)] border border-[var(--border-subtle)] text-sm font-medium disabled:opacity-30 disabled:cursor-not-allowed hover:border-[var(--border-medium)] transition-all"
-        >
-          Next
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Swipe hint */}
-      <p className="text-center text-[10px] text-[var(--text-muted)] mt-2 opacity-60">
-        ← Swipe or use arrows to navigate →
-      </p>
-    </div>
-  );
-};
-
-// Section: Skills/Toolbox
-const SkillsSection = () => (
-  <div className="space-y-6">
-    {skills.map((skillGroup, i) => (
-      <motion.div
-        key={skillGroup.label}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: i * 0.1 }}
-        className="glass-card rounded-2xl p-5"
-      >
-        <h4 className="font-semibold text-[var(--text-primary)] mb-3">{skillGroup.label}</h4>
-        <div className="flex flex-wrap gap-2">
-          {skillGroup.items.map((item) => (
-            <span
-              key={item}
-              className="chip hover:chip-accent cursor-default"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-      </motion.div>
-    ))}
-  </div>
-);
-
-// Section: Recognition
-const RecognitionSection = () => (
-  <div className="space-y-6">
-    {/* Awards */}
-    <div className="space-y-4">
-      <h3 className="text-sm font-semibold uppercase tracking-widest text-[var(--accent-primary)]">
-        Awards
-      </h3>
-      {awards.map((award, i) => (
-        <motion.div
-          key={award.title}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: i * 0.1 }}
-          className="glass-card rounded-2xl p-5 hover:border-[var(--border-accent)] transition-all"
-        >
-          <div className="flex items-start gap-4">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
-              <Award className="h-5 w-5" />
-            </span>
-            <div>
-              <h4 className="font-semibold text-[var(--text-primary)]">{award.title}</h4>
-              <p className="text-sm text-[var(--accent-secondary)]">{award.org}</p>
-              <p className="mt-2 text-sm text-[var(--text-muted)]">{award.detail}</p>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-
-    {/* Education */}
-    <div className="space-y-4">
-      <h3 className="text-sm font-semibold uppercase tracking-widest text-[var(--accent-secondary)]">
-        Education
-      </h3>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="glass-card rounded-2xl p-5"
-      >
-        <h4 className="font-semibold text-[var(--text-primary)]">{education.degree}</h4>
-        <p className="text-sm text-[var(--accent-secondary)]">{education.school}</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">
-          {education.location} • {education.period} • CGPA: {education.cgpa}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {education.courses.map((course) => (
-            <span key={course} className="chip chip-secondary">{course}</span>
-          ))}
-        </div>
-      </motion.div>
-    </div>
-  </div>
-);
-
-// Section: Contact
-const ContactSection = () => (
-  <div className="space-y-6">
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="glass-card rounded-3xl p-8 text-center max-w-xl mx-auto"
-    >
-      <div className="relative inline-block mb-6">
-        <div className="absolute -inset-3 rounded-3xl bg-gradient-to-br from-[var(--accent-primary)]/20 to-[var(--accent-secondary)]/20 blur-xl" />
-        <img
-          src={profile.photo}
-          alt={`${profile.firstName} ${profile.lastName}`}
-          className="relative h-24 w-24 rounded-2xl object-cover border-2 border-[var(--border-medium)]"
-          loading="lazy"
-        />
-      </div>
-
-      <h3 className="font-display text-2xl font-bold text-[var(--text-primary)]">
-        Let's Build Something
-      </h3>
-      <p className="mt-2 text-[var(--text-muted)]">
-        Ready for high-stakes systems work and performance-critical roles.
-      </p>
-
-      <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-        <a href={`mailto:${profile.email}`} className="btn-primary">
-          <Mail className="h-4 w-4" />
-          Get in Touch
-          <ArrowUpRight className="h-4 w-4" />
-        </a>
-      </div>
-
-      <div className="mt-6 flex items-center justify-center gap-4">
-        <a
-          href={links.github}
-          target="_blank"
-          rel="noreferrer"
-          className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-subtle)] transition-all"
-        >
-          <Github className="h-5 w-5" />
-        </a>
-        <a
-          href={links.linkedin}
-          target="_blank"
-          rel="noreferrer"
-          className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-subtle)] transition-all"
-        >
-          <Linkedin className="h-5 w-5" />
-        </a>
-        <a
-          href={links.youtube}
-          target="_blank"
-          rel="noreferrer"
-          className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-subtle)] transition-all"
-        >
-          <Youtube className="h-5 w-5" />
-        </a>
-      </div>
-
-      <div className="mt-6 pt-6 border-t border-[var(--border-subtle)]">
-        <div className="flex items-center justify-center gap-2 text-sm text-[var(--text-muted)]">
-          <MapPin className="h-4 w-4" />
-          {profile.location}
-        </div>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">{profile.email}</p>
-      </div>
-    </motion.div>
-  </div>
-);
-
-/* ================================================================
-   SECTION CONTENT MAP
-   ================================================================ */
-const sectionContent: Record<string, React.FC> = {
+const sectionContent: Record<string, React.FC<SectionProps>> = {
   impact: ImpactSection,
   work: WorkSection,
   projects: ProjectsSection,
@@ -506,94 +53,88 @@ const sectionContent: Record<string, React.FC> = {
 const Portfolio = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [theme, setTheme] = useState('dark');
-
-  // Initialize theme
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(savedTheme);
-    if (savedTheme === 'light') {
-      document.documentElement.classList.add('light');
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') || 'dark';
     }
-  }, []);
+    return 'dark';
+  });
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
-    if (newTheme === 'light') {
-      document.documentElement.classList.add('light');
-    } else {
-      document.documentElement.classList.remove('light');
-    }
+    document.documentElement.classList.toggle('light', newTheme === 'light');
+    const metaThemeColor = document.getElementById('meta-theme-color');
+    if (metaThemeColor) metaThemeColor.setAttribute('content', newTheme === 'light' ? '#faf9f7' : '#0a0a0f');
   };
-  const wheelTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const lastWheelTime = useRef(0);
+  // Refs for stable event listener callbacks (avoids listener thrashing)
+  const activeIndexRef = useRef(activeIndex);
+  const isTransitioningRef = useRef(isTransitioning);
+  const sectionsLengthRef = useRef(0);
 
   const sections = chapterItems;
   const currentSection = sections[activeIndex];
   const SectionIcon = sectionIcons[currentSection.id] || Sparkles;
   const SectionContent = sectionContent[currentSection.id] || ImpactSection;
 
-  // Handle wheel navigation (Root Level)
+  // Keep refs in sync for stable callbacks
+  useEffect(() => { activeIndexRef.current = activeIndex; }, [activeIndex]);
+  useEffect(() => { isTransitioningRef.current = isTransitioning; }, [isTransitioning]);
+  useEffect(() => { sectionsLengthRef.current = sections.length; }, [sections.length]);
+
+  // Handle wheel navigation (Root Level) — stable identity via refs
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
-      // Don't navigate if transitioning
-      if (isTransitioning) return;
+      if (isTransitioningRef.current) return;
 
       const now = Date.now();
-      if (now - lastWheelTime.current < 800) return; // Debounce
+      if (now - lastWheelTime.current < 800) return;
 
       const delta = e.deltaY;
-
-      // Only navigate if the event bubbled up (meaning child didn't handle it)
       if (delta > 30) {
-        // Scroll down = next section
-        if (activeIndex < sections.length - 1) {
+        if (activeIndexRef.current < sectionsLengthRef.current - 1) {
           lastWheelTime.current = now;
           setIsTransitioning(true);
           setActiveIndex((prev) => prev + 1);
         }
       } else if (delta < -30) {
-        // Scroll up = previous section
-        if (activeIndex > 0) {
+        if (activeIndexRef.current > 0) {
           lastWheelTime.current = now;
           setIsTransitioning(true);
           setActiveIndex((prev) => prev - 1);
         }
       }
     },
-    [activeIndex, sections.length, isTransitioning]
+    []
   );
 
-  // Handle keyboard navigation
+  // Handle keyboard navigation — stable callback, listener attached once
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (isTransitioning) return;
+      if (isTransitioningRef.current) return;
 
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-        // e.preventDefault(); // Optional: allow default if needed, but nav usually prevents
-        if (activeIndex < sections.length - 1) {
+        if (activeIndexRef.current < sectionsLengthRef.current - 1) {
           setIsTransitioning(true);
           setActiveIndex((prev) => prev + 1);
         }
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-        // e.preventDefault();
-        if (activeIndex > 0) {
+        if (activeIndexRef.current > 0) {
           setIsTransitioning(true);
           setActiveIndex((prev) => prev - 1);
         }
       }
     },
-    [activeIndex, sections.length, isTransitioning]
+    []
   );
 
-  // Setup keyboard listener (Window level is fine for keys)
+  // Setup keyboard listener ONCE on mount (no thrashing)
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
   // Reset transition state
@@ -604,9 +145,9 @@ const Portfolio = () => {
     }
   }, [isTransitioning, activeIndex]);
 
-  // Navigate to section
+  // Navigate to section — allows immediate navigation (no freeze)
   const goToSection = (index: number) => {
-    if (index !== activeIndex && !isTransitioning) {
+    if (index >= 0 && index < sections.length && index !== activeIndex) {
       setIsTransitioning(true);
       setActiveIndex(index);
     }
@@ -623,22 +164,19 @@ const Portfolio = () => {
       {/* 3D Background */}
       <Scene3D activeSection={activeIndex} />
 
-      {/* Floating Orbs removed - using Scene3D orbs only for performance */}
-
       {/* Main Container */}
       <div className="relative z-10 h-full w-full flex flex-col">
 
         {/* Header */}
         <header className="shrink-0 px-6 lg:px-12 py-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <motion.div
-              className="relative"
-            >
+            <motion.div className="relative">
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] opacity-60 blur" />
               <img
                 src={profile.photo}
                 alt={profile.firstName}
                 className="relative h-12 w-12 rounded-xl object-cover border border-[var(--border-medium)]"
+                fetchPriority="high"
               />
             </motion.div>
             <div>
@@ -665,28 +203,15 @@ const Portfolio = () => {
                 <Moon className="h-5 w-5 text-[var(--accent-tertiary)]" />
               )}
             </button>
-            <a
-              href={links.github}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-ghost"
-            >
+            <a href={links.github} target="_blank" rel="noreferrer" className="btn-ghost" aria-label="GitHub">
               <Github className="h-4 w-4" />
               <span className="hidden sm:inline">GitHub</span>
             </a>
-            <a
-              href={links.linkedin}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-ghost"
-            >
+            <a href={links.linkedin} target="_blank" rel="noreferrer" className="btn-ghost" aria-label="LinkedIn">
               <Linkedin className="h-4 w-4" />
               <span className="hidden sm:inline">LinkedIn</span>
             </a>
-            <a
-              href={`mailto:${profile.email}`}
-              className="btn-primary"
-            >
+            <a href={`mailto:${profile.email}`} className="btn-primary" aria-label="Contact via email">
               <Mail className="h-4 w-4" />
               <span className="hidden sm:inline">Contact</span>
             </a>
@@ -705,6 +230,8 @@ const Portfolio = () => {
                   className={`nav-dot ${i === activeIndex ? 'active' : ''}`}
                   onClick={() => goToSection(i)}
                   title={section.label}
+                  aria-label={`Navigate to ${section.label}`}
+                  aria-current={i === activeIndex ? 'step' : undefined}
                 />
               ))}
             </div>
@@ -757,24 +284,16 @@ const Portfolio = () => {
                   transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
                   className={`h-full no-scrollbar pb-8 ${isTransitioning ? 'overflow-hidden' : 'overflow-y-auto'}`}
                   onWheel={(e) => {
-                    // Check if content overflows and handle nested scrolling
                     const el = e.currentTarget;
                     const { scrollTop, scrollHeight, clientHeight } = el;
-
-                    // If content fits (no scrollbar), allow bubble immediately to handle navigation
                     if (scrollHeight <= clientHeight) return;
-
                     const isAtTop = scrollTop <= 0;
                     const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
-
-                    // If we can scroll in the requested direction, stop propagation (consume event)
-                    // If we are at bounds, allow bubbling (parent handles navigation)
                     if ((!isAtTop && e.deltaY < 0) || (!isAtBottom && e.deltaY > 0)) {
                       e.stopPropagation();
                     }
                   }}
                 >
-                  {/* @ts-ignore - Dynamic component props */}
                   <SectionContent isTransitioning={isTransitioning} />
                 </motion.div>
               </AnimatePresence>
@@ -807,6 +326,7 @@ const Portfolio = () => {
               <button
                 onClick={() => goToSection(activeIndex - 1)}
                 disabled={activeIndex === 0}
+                aria-label="Previous section"
                 className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-subtle)] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronUp className="h-5 w-5" />
@@ -814,6 +334,7 @@ const Portfolio = () => {
               <button
                 onClick={() => goToSection(activeIndex + 1)}
                 disabled={activeIndex === sections.length - 1}
+                aria-label="Next section"
                 className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-subtle)] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronDown className="h-5 w-5" />
@@ -835,16 +356,19 @@ const Portfolio = () => {
             <button
               onClick={() => goToSection(activeIndex - 1)}
               disabled={activeIndex === 0}
+              aria-label="Previous section"
               className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--bg-tertiary)] text-[var(--text-secondary)] disabled:opacity-30"
             >
               <ChevronUp className="h-5 w-5" />
               Prev
             </button>
             <div className="flex items-center gap-2 px-4">
-              {sections.map((_, i) => (
+              {sections.map((section, i) => (
                 <button
                   key={i}
                   onClick={() => goToSection(i)}
+                  aria-label={`Navigate to ${section.label}`}
+                  aria-current={i === activeIndex ? 'step' : undefined}
                   className={`h-2 rounded-full transition-all ${i === activeIndex
                     ? 'w-6 bg-[var(--accent-primary)]'
                     : 'w-2 bg-[var(--border-medium)]'
@@ -855,6 +379,7 @@ const Portfolio = () => {
             <button
               onClick={() => goToSection(activeIndex + 1)}
               disabled={activeIndex === sections.length - 1}
+              aria-label="Next section"
               className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent-primary)] text-white disabled:opacity-30"
             >
               Next

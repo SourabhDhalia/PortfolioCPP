@@ -1,0 +1,318 @@
+/* ================================================================
+   GLASS MORPHISM
+   ================================================================ */
+.glass {
+    background: var(--bg-glass);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--border-subtle);
+}
+
+.glass-strong {
+    background: var(--bg-glass-strong);
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid var(--border-medium);
+}
+
+.glass-card {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.05) 0%,
+            rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-soft);
+}
+
+/* ================================================================
+   GLOW EFFECTS
+   ================================================================ */
+.glow-accent {
+    box-shadow: var(--shadow-glow-accent);
+}
+
+.glow-secondary {
+    box-shadow: var(--shadow-glow-secondary);
+}
+
+.glow-text {
+    text-shadow: 0 0 40px var(--accent-primary-glow);
+}
+
+/* ================================================================
+   GRADIENT TEXT
+   ================================================================ */
+.gradient-text {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gradient-text-alt {
+    background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-tertiary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ================================================================
+   ANIMATED GRADIENT BORDER
+   ================================================================ */
+.gradient-border {
+    position: relative;
+}
+
+.gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg,
+            var(--accent-primary) 0%,
+            var(--accent-secondary) 50%,
+            var(--accent-tertiary) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: borderRotate 4s linear infinite;
+}
+
+/* ================================================================
+   BUTTON STYLES
+   ================================================================ */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, #ff8c5a 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-medium);
+    box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255, 107, 53, 0.4);
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.75rem;
+    background: transparent;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+    border-radius: 100px;
+    border: 1px solid var(--border-medium);
+    cursor: pointer;
+    transition: all var(--transition-medium);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-strong);
+    transform: translateY(-2px);
+}
+
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.8125rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-ghost:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ================================================================
+   CHIP / TAG STYLES
+   ================================================================ */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    border-radius: 100px;
+    border: 1px solid var(--border-subtle);
+    transition: all var(--transition-fast);
+}
+
+.chip:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-medium);
+    color: var(--text-primary);
+}
+
+.chip-accent {
+    background: rgba(255, 107, 53, 0.12);
+    border-color: rgba(255, 107, 53, 0.3);
+    color: var(--accent-primary);
+}
+
+.chip-secondary {
+    background: rgba(0, 212, 170, 0.12);
+    border-color: rgba(0, 212, 170, 0.3);
+    color: var(--accent-secondary);
+}
+
+/* ================================================================
+   CARD STYLES
+   ================================================================ */
+.card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: all var(--transition-medium);
+}
+
+.card:hover {
+    border-color: var(--border-medium);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.card-accent {
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-glow-accent);
+}
+
+/* ================================================================
+   STAT CARD
+   ================================================================ */
+.stat-card {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.04) 0%,
+            rgba(255, 255, 255, 0.01) 100%);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 1.25rem;
+    transition: all var(--transition-medium);
+}
+
+.stat-card:hover {
+    border-color: var(--border-medium);
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.06) 0%,
+            rgba(255, 255, 255, 0.02) 100%);
+}
+
+.stat-value {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* ================================================================
+   METER / PROGRESS BAR
+   ================================================================ */
+.meter {
+    height: 6px;
+    background: var(--border-subtle);
+    border-radius: 100px;
+    overflow: hidden;
+}
+
+.meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    border-radius: 100px;
+    transition: width var(--transition-slow);
+}
+
+/* ================================================================
+   LIGHT THEME — Component Overrides
+   Fixes hardcoded rgba(255,255,255,...) that are invisible on light
+   ================================================================ */
+html.light .glass-card {
+    background: linear-gradient(135deg,
+            rgba(26, 22, 21, 0.02) 0%,
+            rgba(26, 22, 21, 0.01) 100%);
+}
+
+html.light .stat-card {
+    background: linear-gradient(135deg,
+            rgba(26, 22, 21, 0.02) 0%,
+            rgba(26, 22, 21, 0.01) 100%);
+}
+
+html.light .stat-card:hover {
+    background: linear-gradient(135deg,
+            rgba(26, 22, 21, 0.04) 0%,
+            rgba(26, 22, 21, 0.02) 100%);
+}
+
+html.light .chip {
+    background: rgba(26, 22, 21, 0.04);
+}
+
+html.light .chip:hover {
+    background: rgba(26, 22, 21, 0.07);
+}
+
+html.light .chip-accent {
+    background: rgba(232, 93, 42, 0.08);
+    border-color: rgba(232, 93, 42, 0.25);
+}
+
+html.light .chip-secondary {
+    background: rgba(0, 158, 126, 0.08);
+    border-color: rgba(0, 158, 126, 0.25);
+}
+
+html.light .btn-secondary:hover {
+    background: rgba(26, 22, 21, 0.04);
+}
+
+html.light .btn-ghost:hover {
+    background: rgba(26, 22, 21, 0.04);
+}
+
+html.light .btn-primary {
+    box-shadow: 0 4px 20px rgba(232, 93, 42, 0.2);
+}
+
+html.light .btn-primary:hover {
+    box-shadow: 0 8px 30px rgba(232, 93, 42, 0.25);
+}

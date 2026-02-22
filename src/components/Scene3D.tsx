@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState, useEffect } from 'react';
+import React from 'react';
 
 
 /* ================================================================
@@ -10,10 +10,9 @@ const SimpleBackground = () => (
         {/* Base gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--bg-primary)] via-[var(--bg-secondary)] to-[var(--bg-primary)] transition-colors duration-500" />
 
-        {/* Animated orbs - optimized with will-change and reduced blur */}
-        {/* Animated orbs - optimized with CSS animations, reduced flicker */}
+        {/* Animated orbs - radial gradients provide soft edges natively (no GPU-heavy blur needed) */}
         <div
-            className="absolute w-[500px] h-[500px] rounded-full blur-[80px] opacity-25 animate-float-slower"
+            className="absolute w-[500px] h-[500px] rounded-full opacity-25 animate-float-slower"
             style={{
                 background: 'radial-gradient(circle, #ff6b35 0%, transparent 70%)',
                 top: '-10%',
@@ -22,7 +21,7 @@ const SimpleBackground = () => (
             }}
         />
         <div
-            className="absolute w-[400px] h-[400px] rounded-full blur-[60px] opacity-20 animate-float-slow"
+            className="absolute w-[400px] h-[400px] rounded-full opacity-20 animate-float-slow"
             style={{
                 background: 'radial-gradient(circle, #00d4aa 0%, transparent 70%)',
                 bottom: '-15%',
@@ -31,7 +30,7 @@ const SimpleBackground = () => (
             }}
         />
         <div
-            className="absolute w-[300px] h-[300px] rounded-full blur-[50px] opacity-15 animate-float-slowest"
+            className="absolute w-[300px] h-[300px] rounded-full opacity-15 animate-float-slowest"
             style={{
                 background: 'radial-gradient(circle, #6366f1 0%, transparent 70%)',
                 top: '40%',

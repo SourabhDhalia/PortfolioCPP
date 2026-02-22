@@ -24,6 +24,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm install
+      - run: npx tsc --noEmit
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -1,0 +1,39 @@
+/* ================================================================
+   RESPONSIVE UTILITIES
+   ================================================================ */
+@media (max-width: 1024px) {
+    :root {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        font-size: 14px;
+    }
+}
+
+/* ================================================================
+   PRINT STYLES
+   ================================================================ */
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+        overflow: visible !important;
+    }
+
+    .glass,
+    .glass-strong {
+        display: none !important;
+    }
+}
+
+/* ================================================================
+   LIGHT THEME — Reduce background orb intensity
+   ================================================================ */
+html.light .animate-float-slow,
+html.light .animate-float-slower,
+html.light .animate-float-slowest {
+    opacity: 0.08 !important;
+}

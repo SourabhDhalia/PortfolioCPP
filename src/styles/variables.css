@@ -1,0 +1,84 @@
+/* ================================================================
+   ROOT VARIABLES - Premium Color System
+   ================================================================ */
+:root {
+    /* Colors */
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #12121a;
+    --bg-tertiary: #1a1a24;
+    --bg-glass: rgba(18, 18, 26, 0.75);
+    --bg-glass-strong: rgba(18, 18, 26, 0.9);
+
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.45);
+
+    /* Accent Colors */
+    --accent-primary: #ff6b35;
+    --accent-primary-glow: rgba(255, 107, 53, 0.4);
+    --accent-secondary: #00d4aa;
+    --accent-secondary-glow: rgba(0, 212, 170, 0.3);
+    --accent-tertiary: #6366f1;
+    --accent-tertiary-glow: rgba(99, 102, 241, 0.3);
+
+    /* Borders & Strokes */
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.12);
+    --border-strong: rgba(255, 255, 255, 0.2);
+    --border-accent: rgba(255, 107, 53, 0.4);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 8px 40px rgba(0, 0, 0, 0.4);
+    --shadow-glow-accent: 0 0 60px rgba(255, 107, 53, 0.2);
+    --shadow-glow-secondary: 0 0 60px rgba(0, 212, 170, 0.15);
+
+    /* Typography */
+    --font-display: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-medium: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ================================================================
+   LIGHT THEME OVERRIDES — Warm, soothing palette
+   ================================================================ */
+html.light {
+    /* Backgrounds — warm cream/stone, not stark white */
+    --bg-primary: #faf9f7;
+    --bg-secondary: #f3f1ee;
+    --bg-tertiary: #ebe8e4;
+    --bg-glass: rgba(250, 249, 247, 0.85);
+    --bg-glass-strong: rgba(250, 249, 247, 0.95);
+
+    /* Text — warm dark tones, not pure black */
+    --text-primary: #1a1615;
+    --text-secondary: #4a4543;
+    --text-muted: #8a8280;
+
+    /* Accent Colors — slightly muted for comfort on light */
+    --accent-primary: #e85d2a;
+    --accent-primary-glow: rgba(232, 93, 42, 0.2);
+    --accent-secondary: #009e7e;
+    --accent-secondary-glow: rgba(0, 158, 126, 0.15);
+    --accent-tertiary: #5558e8;
+    --accent-tertiary-glow: rgba(85, 88, 232, 0.15);
+
+    /* Borders — warm subtle tones */
+    --border-subtle: rgba(26, 22, 21, 0.06);
+    --border-medium: rgba(26, 22, 21, 0.10);
+    --border-strong: rgba(26, 22, 21, 0.18);
+    --border-accent: rgba(232, 93, 42, 0.35);
+
+    /* Shadows — warm, not cold gray */
+    --shadow-soft: 0 4px 20px rgba(26, 22, 21, 0.04);
+    --shadow-medium: 0 8px 30px rgba(26, 22, 21, 0.07);
+    --shadow-glow-accent: 0 0 40px rgba(232, 93, 42, 0.10);
+    --shadow-glow-secondary: 0 0 40px rgba(0, 158, 126, 0.10);
+}
