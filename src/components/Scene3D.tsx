@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, memo } from 'react';
 
 /* ================================================================
    CONSTELLATION PARTICLE NETWORK — ENHANCED
@@ -38,6 +38,7 @@ interface Meteor {
 
 const PARTICLE_COUNT = 70;
 const CONNECTION_DISTANCE = 160;
+const CONNECTION_DISTANCE_SQ = CONNECTION_DISTANCE * CONNECTION_DISTANCE;
 const MOUSE_RADIUS = 220;
 const MOUSE_STRENGTH = 0.025;
 const METEOR_CHANCE = 0.003; // ~1 meteor every 5 seconds
@@ -70,6 +71,10 @@ const ConstellationBackground = () => {
     }, []);
 
     useEffect(() => {
+        // Respect prefers-reduced-motion — skip entire animation
+        const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!motionOk) return;
+
         const canvas = canvasRef.current;
         if (!canvas) return;
 
@@ -107,8 +112,8 @@ const ConstellationBackground = () => {
         window.addEventListener('mousemove', handleMouseMove, { passive: true });
         window.addEventListener('mouseleave', handleMouseLeave, { passive: true });
 
-        // Color system
-        const getColors = () => {
+        // Color system — cached, updated via MutationObserver instead of per-frame DOM read
+        const computeColors = () => {
             const isLight = document.documentElement.classList.contains('light');
             return {
                 particles: isLight
@@ -118,6 +123,9 @@ const ConstellationBackground = () => {
                 meteor: isLight ? '232, 93, 42' : '255, 200, 120',
             };
         };
+        let cachedColors = computeColors();
+        const observer = new MutationObserver(() => { cachedColors = computeColors(); });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
         // Draw a diamond shape
         const drawDiamond = (cx: number, cy: number, size: number) => {
@@ -171,7 +179,7 @@ const ConstellationBackground = () => {
             const particles = particlesRef.current;
             const meteors = meteorsRef.current;
             const mouse = mouseRef.current;
-            const colors = getColors();
+            const colors = cachedColors;
 
             ctx.clearRect(0, 0, w, h);
 
@@ -259,14 +267,15 @@ const ConstellationBackground = () => {
                 // Draw particle
                 drawParticle(p, pulseAlpha, color);
 
-                // Connections between particles
+                // Connections between particles — squared distance avoids Math.sqrt
                 for (let j = i + 1; j < particles.length; j++) {
                     const p2 = particles[j];
                     const cdx = p.x - p2.x;
                     const cdy = p.y - p2.y;
-                    const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
+                    const cdistSq = cdx * cdx + cdy * cdy;
 
-                    if (cdist < CONNECTION_DISTANCE) {
+                    if (cdistSq < CONNECTION_DISTANCE_SQ) {
+                        const cdist = Math.sqrt(cdistSq);
                         const alpha = (1 - cdist / CONNECTION_DISTANCE) * 0.1;
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
@@ -310,6 +319,7 @@ const ConstellationBackground = () => {
 
         return () => {
             cancelAnimationFrame(animFrameRef.current);
+            observer.disconnect();
             window.removeEventListener('resize', setSize);
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseleave', handleMouseLeave);
@@ -375,14 +385,11 @@ const ConstellationBackground = () => {
 };
 
 /* ================================================================
-   SCENE COMPONENT
+   SCENE COMPONENT — memoized to prevent re-renders from parent
    ================================================================ */
-interface Scene3DProps {
-    activeSection: number;
-}
-
-const Scene3D = ({ activeSection }: Scene3DProps) => {
+const Scene3D = memo(() => {
     return <ConstellationBackground />;
-};
+});
+Scene3D.displayName = 'Scene3D';
 
 export default Scene3D;

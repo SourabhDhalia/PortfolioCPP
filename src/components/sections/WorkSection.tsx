@@ -3,9 +3,14 @@ import { ChevronDown } from 'lucide-react';
 import { experienceHighlights } from '../../data';
 import type { SectionProps } from '../../types';
 
-const WorkSection = ({ isTransitioning }: SectionProps) => {
-    const [expandedIdx, setExpandedIdx] = React.useState<number | null>(null);
+const WorkSection = ({ isTransitioning, workExpandedRef }: SectionProps) => {
+    const [expandedIdx, setExpandedIdx] = React.useState<number | null>(workExpandedRef?.current ?? null);
     const scrollRef = React.useRef<HTMLDivElement>(null);
+
+    // Sync expanded state back to persisted ref
+    React.useEffect(() => {
+        if (workExpandedRef) workExpandedRef.current = expandedIdx;
+    }, [expandedIdx, workExpandedRef]);
 
     const handleScroll = (e: React.WheelEvent) => {
         const el = scrollRef.current;

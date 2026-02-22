@@ -60,6 +60,10 @@ const Portfolio = () => {
     return 'dark';
   });
 
+  // Persisted section state — survives unmount/remount from AnimatePresence
+  const projectPageRef = useRef(0);
+  const workExpandedRef = useRef<number | null>(null);
+
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
@@ -116,6 +120,10 @@ const Portfolio = () => {
     (e: KeyboardEvent) => {
       if (isTransitioningRef.current) return;
 
+      // Don't hijack arrow keys inside form elements
+      const tag = document.activeElement?.tagName || '';
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
         if (activeIndexRef.current < sectionsLengthRef.current - 1) {
           setIsTransitioning(true);
@@ -162,7 +170,7 @@ const Portfolio = () => {
       onWheel={handleWheel}
     >
       {/* 3D Background */}
-      <Scene3D activeSection={activeIndex} />
+      <Scene3D />
 
       {/* Main Container */}
       <div className="relative z-10 h-full w-full flex flex-col">
@@ -294,7 +302,11 @@ const Portfolio = () => {
                     }
                   }}
                 >
-                  <SectionContent isTransitioning={isTransitioning} />
+                  <SectionContent
+                    isTransitioning={isTransitioning}
+                    projectPageRef={projectPageRef}
+                    workExpandedRef={workExpandedRef}
+                  />
                 </motion.div>
               </AnimatePresence>
             </div>

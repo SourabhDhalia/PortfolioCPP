@@ -3,14 +3,19 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { projects } from '../../data';
 import type { SectionProps } from '../../types';
 
-const ProjectsSection = (_props: SectionProps) => {
-    const [page, setPage] = React.useState(0);
+const ProjectsSection = ({ projectPageRef }: SectionProps) => {
+    const [page, setPage] = React.useState(projectPageRef?.current ?? 0);
     const touchStartX = React.useRef(0);
     const touchStartY = React.useRef(0);
     const projectsPerPage = 4;
     const totalPages = Math.ceil(projects.length / projectsPerPage);
     const startIdx = page * projectsPerPage;
     const visibleProjects = projects.slice(startIdx, startIdx + projectsPerPage);
+
+    // Sync page back to persisted ref
+    React.useEffect(() => {
+        if (projectPageRef) projectPageRef.current = page;
+    }, [page, projectPageRef]);
 
     // Swipe gesture handlers — track both axes to avoid diagonal swipe bug
     const handleTouchStart = (e: React.TouchEvent) => {
@@ -106,7 +111,7 @@ const ProjectsSection = (_props: SectionProps) => {
                             key={i}
                             onClick={() => setPage(i)}
                             aria-label={`Go to projects page ${i + 1}`}
-                            aria-current={page === i ? 'true' : undefined}
+                            aria-current={page === i ? 'page' : undefined}
                             className={`w-2.5 h-2.5 rounded-full transition-all ${page === i ? 'bg-[var(--accent-primary)] scale-125' : 'bg-[var(--border-medium)] hover:bg-[var(--text-muted)]'}`}
                         />
                     ))}
