@@ -14,6 +14,7 @@ html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -22,12 +23,13 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow: hidden;
-    height: 100vh;
+    height: 100dvh;
     width: 100vw;
+    overscroll-behavior-y: contain;
 }
 
 #root {
-    height: 100vh;
+    height: 100dvh;
     width: 100vw;
     overflow: hidden;
 }

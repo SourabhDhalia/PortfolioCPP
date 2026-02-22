@@ -64,6 +64,10 @@ const Portfolio = () => {
   const projectPageRef = useRef(0);
   const workExpandedRef = useRef<number | null>(null);
 
+  // Touch/swipe tracking for mobile vertical navigation
+  const touchStartY = useRef(0);
+  const touchStartX = useRef(0);
+
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
@@ -145,6 +149,33 @@ const Portfolio = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Touch/swipe handlers for mobile vertical section navigation
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (isTransitioningRef.current) return;
+
+    const endY = e.changedTouches[0].clientY;
+    const endX = e.changedTouches[0].clientX;
+    const diffY = touchStartY.current - endY;
+    const diffX = touchStartX.current - endX;
+    const threshold = 60;
+
+    // Only trigger if swipe is predominantly vertical
+    if (Math.abs(diffY) > threshold && Math.abs(diffY) > Math.abs(diffX) * 1.5) {
+      if (diffY > 0 && activeIndexRef.current < sectionsLengthRef.current - 1) {
+        setIsTransitioning(true);
+        setActiveIndex((prev) => prev + 1);
+      } else if (diffY < 0 && activeIndexRef.current > 0) {
+        setIsTransitioning(true);
+        setActiveIndex((prev) => prev - 1);
+      }
+    }
+  }, []);
+
   // Reset transition state
   useEffect(() => {
     if (isTransitioning) {
@@ -166,8 +197,11 @@ const Portfolio = () => {
 
   return (
     <div
-      className="relative h-screen w-screen overflow-hidden bg-[var(--bg-primary)]"
+      className="relative w-screen overflow-hidden bg-[var(--bg-primary)]"
+      style={{ height: '100dvh' }}
       onWheel={handleWheel}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* 3D Background */}
       <Scene3D />
@@ -273,8 +307,8 @@ const Portfolio = () => {
                 </motion.div>
               </AnimatePresence>
 
-              {/* Chips */}
-              <div className="mt-4 flex flex-wrap gap-2">
+              {/* Chips — fixed min-height prevents layout shift between sections */}
+              <div className="mt-4 flex flex-wrap gap-2 min-h-[2rem]">
                 {currentSection.chips.map((chip: string) => (
                   <span key={chip} className="chip chip-accent">{chip}</span>
                 ))}
@@ -286,10 +320,10 @@ const Portfolio = () => {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentSection.id}
-                  initial={{ opacity: 0, y: 60, scale: 0.95 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.98 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -60, scale: 0.95 }}
-                  transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                  exit={{ opacity: 0, y: -30, scale: 0.98 }}
+                  transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
                   className={`h-full no-scrollbar pb-8 ${isTransitioning ? 'overflow-hidden' : 'overflow-y-auto'}`}
                   onWheel={(e) => {
                     const el = e.currentTarget;
@@ -363,7 +397,7 @@ const Portfolio = () => {
         </main>
 
         {/* Mobile Navigation */}
-        <nav className="lg:hidden shrink-0 px-4 py-4 bg-[var(--bg-glass)] backdrop-blur-xl border-t border-[var(--border-subtle)]">
+        <nav className="lg:hidden shrink-0 px-4 py-4 bg-[var(--bg-glass)] backdrop-blur-xl border-t border-[var(--border-subtle)]" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
           <div className="flex items-center justify-between gap-2">
             <button
               onClick={() => goToSection(activeIndex - 1)}
@@ -401,7 +435,7 @@ const Portfolio = () => {
         </nav>
 
         {/* Footer */}
-        <footer className="shrink-0 px-6 lg:px-12 py-4 flex items-center justify-between text-[var(--text-muted)]">
+        <footer className="shrink-0 px-6 lg:px-12 py-4 flex items-center justify-between text-[var(--text-muted)]" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
           <p className="text-xs font-mono">
             © 2026 {profile.firstName} {profile.lastName}
           </p>
