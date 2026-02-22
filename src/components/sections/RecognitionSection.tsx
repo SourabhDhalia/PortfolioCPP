@@ -11,11 +11,8 @@ const RecognitionSection = (_props: SectionProps) => (
                 Awards
             </h3>
             {awards.map((award, i) => (
-                <motion.div
+                <div
                     key={award.title}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
                     className="glass-card rounded-2xl p-5 hover:border-[var(--border-accent)] transition-all"
                 >
                     <div className="flex items-start gap-4">
@@ -28,7 +25,7 @@ const RecognitionSection = (_props: SectionProps) => (
                             <p className="mt-2 text-sm text-[var(--text-muted)]">{award.detail}</p>
                         </div>
                     </div>
-                </motion.div>
+                </div>
             ))}
         </div>
 
@@ -37,10 +34,7 @@ const RecognitionSection = (_props: SectionProps) => (
             <h3 className="text-sm font-semibold uppercase tracking-widest text-[var(--accent-secondary)]">
                 Education
             </h3>
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+            <div
                 className="glass-card rounded-2xl p-5"
             >
                 <h4 className="font-semibold text-[var(--text-primary)]">{education.degree}</h4>
@@ -53,7 +47,7 @@ const RecognitionSection = (_props: SectionProps) => (
                         <span key={course} className="chip chip-secondary">{course}</span>
                     ))}
                 </div>
-            </motion.div>
+            </div>
         </div>
     </div>
 );
