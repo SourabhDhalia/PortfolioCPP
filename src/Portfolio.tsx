@@ -67,6 +67,7 @@ const Portfolio = () => {
   // Touch/swipe tracking for mobile vertical navigation
   const touchStartY = useRef(0);
   const touchStartX = useRef(0);
+  const contentScrollRef = useRef<HTMLDivElement>(null);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -166,6 +167,17 @@ const Portfolio = () => {
 
     // Only trigger if swipe is predominantly vertical
     if (Math.abs(diffY) > threshold && Math.abs(diffY) > Math.abs(diffX) * 1.5) {
+      // Check if content area has more to scroll before navigating
+      const el = contentScrollRef.current;
+      if (el && el.scrollHeight > el.clientHeight) {
+        const isAtTop = el.scrollTop <= 1;
+        const isAtBottom = Math.abs(el.scrollHeight - el.clientHeight - el.scrollTop) < 2;
+        // Swiping up (next) but not at bottom — let it scroll
+        if (diffY > 0 && !isAtBottom) return;
+        // Swiping down (prev) but not at top — let it scroll
+        if (diffY < 0 && !isAtTop) return;
+      }
+
       if (diffY > 0 && activeIndexRef.current < sectionsLengthRef.current - 1) {
         setIsTransitioning(true);
         setActiveIndex((prev) => prev + 1);
@@ -320,6 +332,7 @@ const Portfolio = () => {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentSection.id}
+                  ref={contentScrollRef}
                   initial={{ opacity: 0, y: 30, scale: 0.98 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -30, scale: 0.98 }}
